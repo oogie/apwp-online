@@ -1,0 +1,58 @@
+
+.comp.polarmap {
+    position: relative;
+
+    #polarmap {
+        width: 100%;
+        height: 50rem;
+    }
+
+    .locMarker {
+        pointer-events: none;
+
+        .icon {
+            font-size: 0.6rem;
+        }
+    }
+
+    .export_button {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+
+        font-size: .8rem;
+    }
+
+    .ol-attribution {
+        line-height: 1rem;
+
+        a {
+            color: var(--ol-subtle-foreground-color) !important;
+        }
+    }
+
+    .positionaldialog {
+        position: absolute;
+        top: 3rem;
+        right: 1rem;
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            line-height: 2rem;
+
+            a {
+                display: flex;
+                gap: 0.7ch;
+                justify-content: left;
+                align-items: center;
+            }
+
+            .spacer {
+                height: 1rem;
+            }
+
+        }
+    }
+}

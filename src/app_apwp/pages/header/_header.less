@@ -1,0 +1,69 @@
+@import '../../../shared/styling/variables.less';
+
+
+.page.header {
+    background: @elm_background;
+    border-bottom: 10px var(--elm_primary) solid;
+
+    position: relative;
+    z-index: 100;
+
+    .menu {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        gap: 30px;
+
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+
+        @media @when_mobile {
+            margin-bottom: 0.4rem;
+            margin-top: 0.6rem;
+        }
+    }
+
+    .popup_box {
+        &:hover {
+            .popup_content {
+                height: .5rem;
+                opacity: 1;
+            }
+        }
+    }
+
+    .popup_content {
+        position: relative;
+        top: -.5rem;
+
+        display: block;
+        height: 0;
+        opacity: 0;
+
+        transition: height .2s, opacity .1s;
+    }
+
+    .positionaldialog {
+        position: absolute;
+        right: 0;
+        top: 2.7rem;
+
+        width: 15rem;
+        .content {
+            padding: 1rem;
+        }
+
+        a {
+            display: block;
+        }
+
+        @media @when_mobile_sm {
+            width: 100%;
+            left: 0;
+
+            font-size: 1.3em !important;
+            line-height: 2.4;
+        }
+    }
+}

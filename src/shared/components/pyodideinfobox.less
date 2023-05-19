@@ -1,0 +1,52 @@
+@import '../styling/variables.less';
+
+
+.comp.pyodideinfobox {
+
+    position: fixed;
+    z-index: 200;
+
+    bottom: 1rem;
+    right: 1rem;
+
+    width: 30vw;
+    min-width: 45ch;
+
+    font-size: .9rem;
+
+    background: var(--elm_primary);
+    color: @elm_background;
+
+    padding: 1rem;
+
+    box-shadow: 2px 2px 4px #0006;
+
+    transition: opacity .3s;
+
+    &.hidden {
+        opacity: 0;
+    }
+
+    .close {
+        position: absolute;
+        cursor: pointer;
+        top: 1ch;
+        right: 2ch;
+
+        padding: 1rem;
+        margin: -1rem;
+    }
+
+    .spinner {
+        margin-right: 1ch;
+    }
+
+    .title {
+        font-weight: bold;
+    }
+
+    .content {
+        line-height: normal;
+    }
+
+}

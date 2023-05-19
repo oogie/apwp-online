@@ -1,0 +1,53 @@
+@import '../../../shared/styling/variables.less';
+
+
+.page.home {
+    position: relative;
+
+    .features {
+        justify-content: space-between;
+        gap: 2rem;
+
+        @media @when_mobile {
+            align-items: center;
+        }
+
+        .feature {
+            position: relative;
+
+            hyphens: auto;
+
+            flex-basis: 0;
+            flex-grow: 1;
+
+            max-width: 50ch;
+
+            text-align: center;
+            padding: 3.5rem 2rem;
+            line-height: 1.5rem;
+            font-size: .9rem;
+
+            top: 0;
+            transition: top .2s, box-shadow .15s;
+
+            &:hover {
+                top: -1rem;
+                opacity: 1;
+                box-shadow: 4px 6px 12px #00000030;
+            }
+
+            & > * {
+                text-align: left;
+            }
+
+            & > svg, & > img {
+                margin-bottom: 2.5rem;
+
+                .fa-primary {
+                    color: var(--txt_primary);
+                }
+            }
+        }
+    }
+
+}

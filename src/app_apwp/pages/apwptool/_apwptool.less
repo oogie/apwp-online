@@ -1,0 +1,92 @@
+@import '../../../shared/styling/variables.less';
+
+
+.page.apwptool {
+
+    .showmore {
+        float: right;
+    }
+
+
+    .datasetgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 2rem;
+
+        @media @when_mobile {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media @when_mobile_sm {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .headermenu {
+        position: relative;
+        
+        margin: 0 1rem 0 -0.6rem;
+
+        &>button {
+            font-size: .8rem;
+        }
+    
+        &>.positionaldialog {
+            font-size: 1rem;
+            position: absolute;
+            min-width: 25rem;
+
+            .menu {
+                display: flex;
+                flex-direction: column;
+                padding: 1rem;
+                line-height: 2rem;
+            }
+
+            a {
+                display: flex;
+                gap: 0.7ch;
+                justify-content: left;
+                align-items: center;
+            }
+
+            .spacer {
+                height: 1rem;
+            }
+        }
+    }
+
+
+    .settings {
+        width: 100%;
+        max-width: 420px;
+
+        display: grid;
+        grid-template-columns: auto;
+        gap: 1rem;
+    }
+
+    .activeset {
+        flex-grow: 1;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .emptymsg {
+            font-size: 1.5rem;
+            color: lightgray;
+        }
+
+        .set {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .dataset {
+            width: 348px;
+        }
+    }
+
+}

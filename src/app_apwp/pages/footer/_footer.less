@@ -1,0 +1,59 @@
+@import '../../../shared/styling/variables.less';
+
+
+.page.footer {
+
+    position: relative;
+
+    background: @elm_background_active;
+
+    padding: 4rem 4rem 6rem 4rem;
+
+    overflow-x: hidden;
+
+    .content {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        @media @when_mobile_sm {
+            flex-direction: column;
+
+            & > div {
+                margin-bottom: 3rem;
+            }
+        }
+
+        .logos {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            padding-top: 1rem;
+
+            a {
+                display: block;
+            }
+
+            img {
+                max-height: 5rem;
+            }
+        }
+    }
+
+    .siteinfo {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+
+        width: 100vw;
+
+        background: var(--elm_primary);
+        color: white;
+
+        padding: .3rem 0 .4rem;
+
+        text-align: center;
+    }
+
+}

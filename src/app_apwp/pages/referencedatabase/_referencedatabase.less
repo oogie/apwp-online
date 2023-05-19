@@ -1,0 +1,44 @@
+@import '../../../shared/styling/variables.less';
+
+
+.page.referencedatabase {
+
+    .versions {
+        margin-top: 1rem;
+
+        display: grid;
+        grid-template-columns: repeat(5, auto);
+        gap: .2rem;
+
+        @media @when_mobile {
+            grid-template-columns: repeat(3, auto);
+        }
+    }
+
+    .form {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+
+        & > * {
+            flex-grow: 1;
+            flex-basis: 0;
+        }
+
+        .questions {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: auto;
+        }
+
+        .data {
+            .datasets {
+                & > * {
+                    margin: 2rem auto;
+                    width: 348px;
+                }
+            }
+
+        }
+    }
+}

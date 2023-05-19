@@ -1,0 +1,155 @@
+@import '../styling/variables.less';
+
+.input {
+
+    .title {
+        line-height: 1em;
+    }
+
+
+    .saveui {
+        opacity: 0;
+        font-size: 0.8em;
+        transition: opacity .15s 0s;
+    }
+    &.saving .saveui {
+        opacity: 1;
+        transition: opacity 0s 0s;
+    }
+
+    &.formatted.input_text {
+        .formatval {
+            pointer-events: none;
+            font-size: 0.8rem;
+            line-height: 1rem;
+            position: absolute;
+            bottom: 0.25rem;
+            left: 0.2rem;
+            transition: color .2s, bottom .2s;
+            z-index: 1;
+        }
+        &:focus-within .formatval {
+            bottom: 0.6rem;
+            color: @txt_default_lesser;
+        }
+
+        input {
+            transition: color .2s, margin-bottom .2s;
+            color: transparent;
+
+            &:focus {
+                color: inherit;
+                margin-bottom: 1.7rem;
+            }
+        }
+    }
+
+    &.invalid {
+        input, select {
+            outline: 2px @txt_error solid;
+            border-color: transparent;
+            outline-offset: -1px;
+
+            background: lighten(@txt_error, 50%);
+        }
+    }
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+
+    &.input_text, &.input_select {
+        position: relative;
+
+        .saveui {
+            position: absolute;
+            right: 5px;
+            bottom: 0;
+            color: @txt_default_lesser;
+            pointer-events: none;
+        }
+
+        input, select {
+            width: 100%;
+            height: 1.7rem;
+            background: white;
+            color: @txt_default;
+            border: 1px solid @txt_default;
+            border-radius: @radius;
+        }
+
+        &.autowidth {
+            input, select {
+                width: auto;
+            }
+        }
+
+    }
+
+    &.input_select {
+        .saveui {
+            right: 18px;
+        }
+    }
+
+    &.input_file {
+        position: relative;
+        height: 100%;
+
+        input {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            outline: none;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .dropzoneui {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            transition: all .14s;
+            border: 1px solid var(--elm_primary);
+            text-align: center;
+            padding: .5rem .5rem 1.5rem;
+
+            .icon {
+                transition: all .14s;
+                margin: 1rem;
+                color: var(--elm_primary);
+                pointer-events: none;
+            }
+        }
+
+        &:hover {
+            .dropzoneui {
+                background: @elm_lesser;
+                .icon {
+                    opacity: 0.8;
+                }
+            }
+        }
+
+        &.draging, &:active {
+            .dropzoneui {
+                background: darken(@elm_lesser, 10%);
+                border-color: darken(@elm_lesser, 10%);
+                .icon {
+                    color: darken(@elm_lesser, 20%);
+                }
+            }
+        }
+    }
+
+
+}

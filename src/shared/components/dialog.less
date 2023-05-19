@@ -1,0 +1,54 @@
+@import '../styling/variables.less';
+
+
+.comp.dialog {
+    position: fixed;
+
+    display: block;
+    padding: 0;
+    border: 0px solid black;
+    border-radius: 4px;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.10);
+    filter: drop-shadow(3px 3px 4px #00000090);
+
+    width: 95%;
+    max-width: 420px;
+
+    &.autowidth {
+        width: fit-content;
+        max-width: 95%;
+    }
+
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-3rem);
+    transition: visibility 0s .2s, opacity .2s, transform .2s;
+
+    &[open]:not(.hide) {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+        transition: visibility 0s 0s, opacity .2s, transform .2s;
+    }
+
+    & > .content, & > .reactions {
+        padding: 1rem;
+    }
+
+    & > .reactions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+
+    &.isLightbox {
+        & > .reactions { display: none }
+        & > .content { padding: 0 }
+    }
+
+}
+
+.comp.dialog::backdrop {
+    opacity: 0;
+}

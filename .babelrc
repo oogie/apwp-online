@@ -1,0 +1,9 @@
+{
+    "presets": ["@babel/preset-env"],
+    "plugins": [
+        ["transform-react-jsx", {
+            "pragma": "m"
+        }],
+        ["jsx-control-statements"]
+    ]
+}
