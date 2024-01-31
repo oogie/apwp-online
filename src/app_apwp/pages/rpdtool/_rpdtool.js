@@ -7,6 +7,7 @@ import './_rpdtool.less';
 
 //assets
 import Demo_input from "../../assets/demo_input.xlsx";
+import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 
 //components
@@ -56,6 +57,8 @@ export const page = {
                     <h2>RPD Tool</h2>
                     The relative paleomagnetic displacement (RPD) tool allows the determination of displacements using the comparison metric that was introduced by <a href='https://doi.org/10.1029/2022JB023953' target="_blank">Vaes et al. (2022)</a>.
                     <br/><br/>
+                    <a href={Demo_input}>Download demo input file (XLSX)</a>
+                    <br /><br />
                     <Showmore>
                         <h4>What</h4>
                         Central to this approach is the comparison between an observed paleopole and a reference pole in which the number of paleomagnetic sites used to compute the paleopole is taken into consideration.
@@ -72,7 +75,9 @@ export const page = {
                         <b>The input dataset</b> can be a compilation of paleopoles or a custom APWP earlier computed with the APWP tool.
                         <br/><br/>
                         <b>As a reference</b>, the global APWP of <a href='#!/referencedatabase'>Vaes et al. (2023)</a> can be used in the coordinates of a major plate, the geographic pole, or a custom dataset.<br/>
-                        <br/><br/>
+                        <br /><br />
+                        <h4>Manual</h4>
+                        See <a href={MANUAL_apwp}>the user manual</a> for more information on how to use the tools and the underlying methodology.
                     </Showmore>
                 </div>
 
@@ -85,10 +90,6 @@ export const page = {
                             </button>
                             <Positionaldialog fillcontainer={true} isOpen={vnode.state.isOpen.datasetsBulk} onClose={() => { vnode.state.isOpen.datasetsBulk = false }}>
                                 <div class='menu'>
-                                    <a onclick={() => { vnode.state.isOpen.datasetsBulk = false }} href={Demo_input}>
-                                        <i class="fa-solid fa-download fa-fw"></i> Download the example input file
-                                    </a>
-                                    <div class="spacer"></div>
                                     <a onclick={() => { exportDocStore(); vnode.state.isOpen.datasetsBulk = false }} href='javascript:'>
                                         <i class="fa-solid fa-file-export fa-fw"></i> Export all datasets to a file (experimental)
                                     </a>
@@ -138,7 +139,7 @@ export const page = {
                 <div class='section content_width_standard'>
                     <div class='flex' style='align-items: baseline;'>
                         <h4>Calculations</h4>
-                        <span class='txt_default_lesser'><i class="fa-light fa-circle-question"></i> calculatons will run locally on your own machine.</span>
+                        <span class='txt_default_lesser'><i class="fa-light fa-circle-question"></i> calculations will run locally on your own machine.</span>
                     </div>
 
                     <div class='flex'>
@@ -149,6 +150,9 @@ export const page = {
                                 options = {options.RPD_datasource}
                                 disabled = {inputDisabled}
                                 onblur = {(val) => {
+                                    if (val === "apwp") {
+                                        helpers.sessionStorage.setOption("RPD_ref_loc_type", "one_ref_loc");
+                                    }
                                     helpers.sessionStorage.setOption("RPD_datasource", val);
                                 }}
                             />
@@ -161,15 +165,38 @@ export const page = {
                                 }} />
                             </div>
                             <div class='titlebar'>
-                                <Input_select
-                                    title = "Reference location"
-                                    value = {helpers.sessionStorage.getOption("RPD_ref_loc_type")}
-                                    options = {options.RPD_ref_loc_type}
-                                    disabled = {inputDisabled}
-                                    onblur = {(val) => {
-                                        helpers.sessionStorage.setOption("RPD_ref_loc_type", val);
-                                    }}
-                                />
+                                <Choose>
+                                    <When condition={helpers.sessionStorage.getOption("RPD_datasource") === "apwp"}>
+                                        <div>
+                                            <div key="only_one_ref_loc">
+                                                <Input_select
+                                                    title="Reference location"
+                                                    value={helpers.sessionStorage.getOption("RPD_ref_loc_type")}
+                                                    options={options.RPD_ref_loc_type.filter((opt) => { return opt.value === "one_ref_loc" })}
+                                                    disabled={inputDisabled}
+                                                    onblur={(val) => {
+                                                        helpers.sessionStorage.setOption("RPD_ref_loc_type", val);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </When>
+                                    <Otherwise>
+                                        <div>
+                                            <div key='all_options'>
+                                                <Input_select
+                                                    title="Reference location"
+                                                    value={helpers.sessionStorage.getOption("RPD_ref_loc_type")}
+                                                    options={options.RPD_ref_loc_type}
+                                                    disabled={inputDisabled}
+                                                    onblur={(val) => {
+                                                        helpers.sessionStorage.setOption("RPD_ref_loc_type", val);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </Otherwise>
+                                </Choose>
                                 {helpers.sessionStorage.getOption("RPD_ref_loc_type") !== "one_ref_loc" ? "" : m.fragment([
                                     <Input_text title = "Longitude" value={helpers.sessionStorage.getOption("RPD_ref_loc_lon")} disabled={inputDisabled} onblur={(val) => {
                                         helpers.sessionStorage.setOption("RPD_ref_loc_lon", parseFloat(val))
@@ -234,7 +261,13 @@ export const page = {
                                 </Otherwise>
                             </Choose>
 
-
+                            <If condition={vnode.state.calcerror}>
+                                <span style='align-self: end;'>
+                                    <i class="txt_error fa-solid fa-triangle-exclamation fa-fade"></i>&nbsp;
+                                    <span class='txt_error'>The previous calculation might have failed</span><br />
+                                    <span class='txt_default_lesser'>see the error console for more information ({localStorage.getItem("consoleShortcut")})</span>
+                                </span>
+                            </If>
                         </div>
 
                         <div class='activeset'>
@@ -344,11 +377,32 @@ function getData(vnode) {
 }
 
 function calcRPD(vnode, dataset, referenceset) {
-    if (dataset === undefined) return; //TODO, better input validation
+    if (dataset === undefined) return;
 
     vnode.state.caclbusy = true;
+    vnode.state.calcerror = false;
 
-    let data = helpers.sessionStorage.getOption("RPD_datasource") === "apwp" ? alert("TODO!") : dataset.data.poles
+    let newestAPWP = dataset.calculations.reduce((newestAPWP, cur) => {
+        if (cur.type === "apwp" && cur.status === "done" && cur.results !== undefined && cur.results.length > 0) {
+            if (newestAPWP === undefined || newestAPWP.created < cur.created) {
+                newestAPWP = cur;
+            }
+        }
+
+        return newestAPWP;
+    }, undefined)
+
+    //tmp fix, TODO JP: check with Bram if this is correct
+    // if (newestAPWP) {
+    //     newestAPWP.results = newestAPWP.results.map((loc) => {
+    //         loc["slon"] = loc["plon"];
+    //         loc["slat"] = loc["plat"];
+    //         return loc;
+    //     })
+    //     console.log(newestAPWP)
+    // }
+
+    let data = helpers.sessionStorage.getOption("RPD_datasource") === "apwp" ? newestAPWP?.results : dataset.data.poles
     let storedReference = {
         ref_type: undefined,
         ref_poles: undefined
@@ -423,16 +477,15 @@ function calcRPD(vnode, dataset, referenceset) {
         })
         .catch((resp) => {
             vnode.state.caclbusy = false;
+            vnode.state.calcerror = true;
 
-            //TODO Maybe put this error somewhere else?
             console.error(resp);
-            // dataset.status = "error";
 
             if (resp instanceof Error) {
                 let maxChars = 70;
                 dataset.error = resp.message.slice(0, maxChars);
                 if (resp.message.length > maxChars) {
-                    dataset.error += "... (see the error console: ctrl-shift-i)"
+                    dataset.error += "... (see the error console: " + localStorage.getItem("consoleShortcut") + ")"
                 }
             }
             else {

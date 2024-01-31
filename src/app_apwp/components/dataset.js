@@ -54,6 +54,16 @@ export const comp = {
             )
         }
 
+        let newestAPWP = dataset.calculations.reduce((newestAPWP, cur) => {
+            if (cur.type === "apwp" && cur.status === "done" && cur.results !== undefined && cur.results.length > 0) {
+                if (newestAPWP === undefined || newestAPWP.created < cur.created) {
+                    newestAPWP = cur;
+                }
+            }
+
+            return newestAPWP;
+        }, undefined)
+
         return (
             <div class={`comp dataset ${vnode.attrs.isactive ? "isactive" : ""} ${vnode.attrs.isref ? "isref" : ""}`}>
                 <div class='card'>
@@ -61,7 +71,7 @@ export const comp = {
                         <When condition={vnode.state.showMap === false}>
                             {/* Show noting... (for example used to reset the polar map)  */}
                         </When>
-                        <When condition={vnode.attrs.showapwp === true && dataset.results.apwp === undefined}>
+                        <When condition={vnode.attrs.showapwp === true && newestAPWP === undefined}>
                             <div class='noapwp'>
                                 <span class='txt_error'>No APWP calculated for this dataset.</span>
                                 <a href='#!/apwptool'>APWP Tool</a>
@@ -69,14 +79,14 @@ export const comp = {
                         </When>
                         <Otherwise>
                             <Polarmap
-                                poles={vnode.attrs.showapwp ? undefined : dataset.data.poles}
-                                path={vnode.attrs.showapwp ? dataset.results.apwp : undefined}
+                                poles={vnode.attrs.showapwp ? newestAPWP.results : dataset.data.poles}
+                                path={vnode.attrs.showapwp ? newestAPWP.results : undefined}
                                 projection={vnode.attrs.showapwp ? options.find("mapProjection", "EPSG:3575") : options.find("mapProjection", "EPSG:3857")}
                                 width="13.5rem"
                                 height="15rem"
                                 controls={false}
                                 exportName={dataset.name}
-                                />
+                            />
                         </Otherwise>
                     </Choose>
 
@@ -243,7 +253,9 @@ function onRemove(vnode, resp) {
 
 function setAPWPdata(vnode) {
     helpers.docstore.getFull("dataset", vnode.attrs.dataset.id).then((fullDataset) => {
-        vnode.state.apwpData = fullDataset.calculations.filter((c) => {return c.type === "apwp" && c.status === "done"}).sort((a,b) => {return b.created - a.created})[0]?.results;
+        vnode.state.apwpData = fullDataset.calculations
+            .filter((c) => {return c.type === "apwp" && c.status === "done"})
+            .sort((a,b) => {return b.created - a.created})?.[0]?.results;
         m.redraw();
     })
 }

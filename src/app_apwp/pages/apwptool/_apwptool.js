@@ -8,6 +8,7 @@ import './_apwptool.less';
 
 //assets
 import Demo_input from "../../assets/demo_input.xlsx";
+import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 
 //components
@@ -51,6 +52,8 @@ export const page = {
                     <h2>APWP Tool</h2>
                     This tool allows you to compute an APWP based on site-level paleomagnetic data using the approach of <a href='#!/referencedatabase'>Vaes et al. (2023)</a>.
                     <br/><br/>
+                    <a href={Demo_input}>Download demo input file (XLSX)</a>
+                    <br /><br />
                     <Showmore>
                         <h4>What</h4>
                         This tool can be used to construct an APWP for any plate or terrane regardless of the age of rocks from which the data are derived, as long as the input data are provided in the coordinate system of the same plate or terrane.
@@ -61,6 +64,8 @@ export const page = {
                         <br/>
                         <small class='txt_default_lesser'>Please be patient when calculating an APWP using many iterations.</small>
                         <br/><br/>
+                        <h4>Manual</h4>
+                        See <a href={MANUAL_apwp}>the user manual</a> for more information on how to use the tools and the underlying methodology.
                     </Showmore>
                 </div>
 
@@ -73,10 +78,6 @@ export const page = {
                             </button>
                             <Positionaldialog fillcontainer={true} isOpen={vnode.state.isOpen.datasetsBulk} onClose={() => { vnode.state.isOpen.datasetsBulk = false }}>
                                 <div class='menu'>
-                                    <a onclick={() => { vnode.state.isOpen.datasetsBulk = false }} href={Demo_input}>
-                                        <i class="fa-solid fa-download fa-fw"></i> Download the example input file
-                                    </a>
-                                    <div class="spacer"></div>
                                     <a onclick={() => { exportDocStore(); vnode.state.isOpen.datasetsBulk = false }} href='javascript:'>
                                         <i class="fa-solid fa-file-export fa-fw"></i> Export all datasets to a file (experimental)
                                     </a>
@@ -124,7 +125,7 @@ export const page = {
                 <div class='section content_width_standard'>
                     <div class='flex' style='align-items: baseline;'>
                         <h4>Calculations</h4>
-                        <span class='txt_default_lesser'><i class="fa-light fa-circle-question"></i> calculatons will run locally on your own machine.</span>
+                        <span class='txt_default_lesser'><i class="fa-light fa-circle-question"></i> calculations will run locally on your own machine.</span>
                     </div>
 
                     <div class='flex'>
@@ -166,6 +167,14 @@ export const page = {
                                     <button style='align-self: end;' onclick={() => {calcAPWP(vnode, vnode.state.activeset)}}>Calculate APWP</button>
                                 </Otherwise>
                             </Choose>
+                            <If condition={vnode.state.calcerror}>
+                                <span style='align-self: end;'>
+                                    <i class="txt_error fa-solid fa-triangle-exclamation fa-fade"></i>&nbsp;
+                                    <span class='txt_error'>The previous calculation might have failed</span><br/>
+                                    <span class='txt_default_lesser'>see the error console for more information ({localStorage.getItem("consoleShortcut")})</span>
+                                </span>
+                            </If>
+
                         </div>
 
                         <div class='activeset'>
@@ -257,7 +266,10 @@ function getData(vnode) {
 
 
 function calcAPWP(vnode, dataset) {
+    if (dataset === undefined) return;
+
     vnode.state.caclbusy = true;
+    vnode.state.calcerror = false;
 
     //First parse the input data
     pyWorkerAPI.run("parsePaleoPoles", {source: dataset.data.poles})
@@ -306,16 +318,15 @@ function calcAPWP(vnode, dataset) {
         })
         .catch((resp) => {
             vnode.state.caclbusy = false;
+            vnode.state.calcerror = true;
 
-            //TODO: Maybe put this error somewhere else?
             console.error(resp);
-            // dataset.status = "error";
 
             if (resp instanceof Error) {
                 let maxChars = 70;
                 dataset.error = resp.message.slice(0, maxChars);
                 if (resp.message.length > maxChars) {
-                    dataset.error += "... (see the error console: ctrl-shift-i)"
+                    dataset.error += "... (see the error console: " + localStorage.getItem("consoleShortcut") + ")"
                 }
             }
             else {

@@ -8,6 +8,7 @@ import './_footer.less';
 import LOGO_nwo from '../../assets/LOGO_nwo.png';
 import LOGO_uu from '../../assets/LOGO_uu.svg';
 
+import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 export const page = {
 
@@ -42,6 +43,10 @@ export const page = {
                     </div>
 
                     <div>
+                        <h4>Manual</h4>
+                        <a href={MANUAL_apwp}>APWP-online manual (PDF)</a>
+                        <br/><br/>
+
                         <h4>Supported by</h4>
                         <div class='logos'>
                             <a href="https://www.nwo.nl/"><img src={LOGO_nwo}></img></a>

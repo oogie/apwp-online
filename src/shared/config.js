@@ -5,7 +5,7 @@ import Demo_data_SWJ from "./assets/SWJ.csv";
 export const config = {
 
     version: {
-        apwp: "1.0"
+        apwp: "1.1"
     },
 
 

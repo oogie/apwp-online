@@ -18,7 +18,14 @@ export const comp = {
                     disabled={vnode.attrs.disabled}
                     class={(vnode.attrs.error ? "error " : "")+(vnode.attrs.size == "auto" ? "size-auto" : "")}
                     value={vnode.attrs.value}
-                    onchange={(e) => {(vnode.attrs.onblur || (() => {}))(e.target.closest("input").files)}}
+                    onchange={(e) => {(vnode.attrs.onblur || (() => {}))(e?.target?.closest?.("input")?.files)}}
+                    onclick={(e) => { 
+                        /*clear value so onchange will fire*/
+                        vnode.attrs.value = null; 
+                        if (e?.target?.closest?.("input") !== undefined) {
+                            e.target.closest("input").value = null;
+                        }
+                    }}
                     accept={vnode.attrs.accept || "application/pdf"}
 
                     ondragenter={(e) => {vnode.state.dragging = true}}

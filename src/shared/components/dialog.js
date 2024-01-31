@@ -31,7 +31,7 @@ export const comp = {
         return (
             <dialog class={`comp dialog ${vnode.attrs.autowidth ? "autowidth" : ""} ${vnode.attrs.isLightbox ? "isLightbox" : ""}`}
                 onclick={(e) => {e.redraw = false; onDialogClick(vnode, e);}}
-                oncancel={(e) => {e.redraw = false; e.preventDefault();}}
+                oncancel={(e) => {e.redraw = false; e?.preventDefault?.();}}
                 style={`margin-top: ${vnode.attrs.topmargin ?? "20vh"}`}
                 >
                 <div class='content'>
@@ -78,7 +78,7 @@ function answer(vnode, resp) {
 }
 
 function onDialogClick(vnode, e) {
-    if (vnode.dom === e.target) {
+    if (vnode.dom === e?.target) {
         answer(vnode, undefined);
     }
 }

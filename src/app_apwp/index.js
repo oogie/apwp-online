@@ -14,7 +14,13 @@ setupErrorLogging();
 function setupErrorLogging() {
     window.onunhandledrejection = function (e) {
         console.log("ERROR (catched at 1)", e)
-        airbrakeNotify(e.reason)
+
+        if (e !== undefined) {
+            airbrakeNotify(e.reason ?? e)
+        }
+        else {
+            airbrakeNotify("Unhandled promise rejection, no error event object")
+        }
     }
 
     console.error = function (message) {
@@ -23,8 +29,13 @@ function setupErrorLogging() {
     }
 
     window.addEventListener('error', (event) => {
-        console.log("ERROR (catched at 3)", event.message)
-        airbrakeNotify(event.message)
+        console.log("ERROR (catched at 3)", event?.message)
+        if (event !== undefined) {
+            airbrakeNotify(event.message ?? event)
+        }
+        else {
+            airbrakeNotify("Unhandled error, no error event object")
+        }
     });
 
     window.onerror = function (message, source, lineno, colno, error) {
@@ -42,14 +53,16 @@ function airbrakeNotify(message, source, lineno) {
     }
 
     console.log("Notify airbrake")
-    airbrake.notify({
-        error: message,
-        params: {
-            source: source,
-            lineno: lineno,
-            siteversion: config.version
-        }
-    });
+    if (airbrake !== undefined) {
+        airbrake.notify({
+            error: message,
+            params: {
+                source: source,
+                lineno: lineno,
+                siteversion: config.version
+            }
+        });
+    }
 }
 
 
@@ -91,6 +104,7 @@ initApp();
 
 
 function initApp() {
+    storeBrowserDetection();
     mountUI();
 }
 
@@ -119,4 +133,27 @@ function mountUI() {
         root.style.setProperty("--elm_primary", "#0F583E");
         root.style.setProperty("--elm_secondary", "#0F583E");
     }
+}
+
+function storeBrowserDetection() {
+    let userAgent = navigator.userAgent;
+   
+    const browserName = userAgent.match(/edg/i) ? "edge" : 
+                        userAgent.match(/chrome|chromium|crios/i) ? "chrome" : 
+                        userAgent.match(/firefox|fxios/i) ? "firefox" : 
+                        userAgent.match(/safari/i) ? "safari" : 
+                        userAgent.match(/opr\//i) ? "opera" : "";
+
+    const systemName = (userAgent.search('Mac') !== -1) ? "mac" : "notmac";
+
+    const consoleShortcut = (systemName === "mac" ? "Cmd + Opt + " : "Ctrl + Shift + ") + (
+                            browserName === "firefox" ? "K" : 
+                            browserName === "safari" ? "C" : 
+                            browserName === "opera" ? "I" : "J");
+
+    localStorage.setItem("browserName", browserName);
+    localStorage.setItem("systemName", systemName);
+    localStorage.setItem("consoleShortcut", consoleShortcut);
+
+    console.log(browserName, systemName, consoleShortcut)
 }

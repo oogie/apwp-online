@@ -133,7 +133,7 @@ module.exports = {
         },
         //Other files
         {
-            test: /\.(csv|xlsx|ods|zip)$/,
+            test: /\.(csv|xlsx|ods|zip|pdf)$/,
             use: [{
                 loader: 'file-loader',
                 options: {

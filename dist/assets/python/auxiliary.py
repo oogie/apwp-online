@@ -274,8 +274,8 @@ def fish_VGPs(K=20, n=100, lon=0, lat=90):
     inc = 90. - np.degrees(2 * np.arcsin(fac))
     dec = np.degrees(2 * np.pi * R2)
 
-    DipDir, Dip = np.ones(n, dtype=np.float).transpose(
-    )*(lon-180.), np.ones(n, dtype=np.float).transpose()*(90.-lat)
+    DipDir, Dip = np.ones(n, dtype=float).transpose(
+    )*(lon-180.), np.ones(n, dtype=float).transpose()*(90.-lat)
     data = np.array([dec, inc, DipDir, Dip]).transpose()
     drot, irot = pmag.dotilt_V(data)
     drot = (drot-180.) % 360.  #
@@ -452,25 +452,25 @@ def get_resampled_sed_poles(dataframe):
 def running_mean_APWP (data, plon_label, plat_label, age_label, window_length, time_step, max_age, min_age, elong=False):
     """
     Generates a running mean apparent polar wander path from a collection of poles
-
+    
     Required input:
     data: Pandas dataframe with pole longitude, latitude and age (in Ma)
     plon_label, plat_label, age_label: column names of pole longitude, pole latitude and age
     window_length: size of time window (in Ma)
     time_step: time step at which APWP is computed (in Ma)
     min_age, max_age: age interval for which APWP is computed (in Ma)
-
+    
     Output:
     Pandas dataframe with APWP and associated statistical parameters
     """
-
+    
     mean_pole_ages = np.arange(min_age, max_age + time_step, time_step)
-
+    
     if elong == True:
         running_means = pd.DataFrame(columns=['age','N','A95','plon','plat','kappa','csd','E','mean_age'])
     else:
         running_means = pd.DataFrame(columns=['age','N','A95','plon','plat','kappa','csd','mean_age'])
-
+    
     for age in mean_pole_ages:
         window_min = age - (window_length / 2.)
         if age == 0:
@@ -480,27 +480,27 @@ def running_mean_APWP (data, plon_label, plat_label, age_label, window_length, t
         # store poles (or VGPs) that fall within time window
         poles = data.loc[(data[age_label] >= window_min) & (data[age_label] <= window_max)]
         plons,plats = poles[plon_label].tolist(),poles[plat_label].tolist()
-
-        # compute Fisher (1953) mean
-        mean = ipmag.fisher_mean(dec=plons, inc=plats)
-        mean_age = poles.age.mean() # compute mean age
-
-        # compute elongation
-        if elong == True:
-            pole_block = ipmag.make_di_block(plons,plats,unit_vector=False)
-            ppars = pmag.doprinc(pole_block)
-            E = ppars["tau2"] / ppars["tau3"]
-
-        if mean: # this just ensures that dict isn't empty
-            if elong == True:
-                running_means.loc[age] = [age, mean['n'], mean['alpha95'], mean['dec'], mean['inc'], mean['k'], mean['csd'], E, mean_age]
-            else:
-                running_means.loc[age] = [age, mean['n'], mean['alpha95'], mean['dec'], mean['inc'], mean['k'], mean['csd'], mean_age]
-        #else:
-            #print('No pseudo-VGPs in age bin from %1.1f to %1.1f Ma' % (window_min,window_max))
-
+        
+        if (len(plons) > 0) and (len(plats) > 0):
+            # compute Fisher (1953) mean
+            mean = ipmag.fisher_mean(dec=plons, inc=plats)
+            mean_age = poles.age.mean() # compute mean age
+        
+            if 'n' in mean and 'alpha95' in mean and 'k' in mean and 'csd' in mean: # this just ensures that dict isn't empty
+                if elong == True:
+                    # compute elongation
+                    pole_block = ipmag.make_di_block(plons,plats,unit_vector=False)
+                    ppars = pmag.doprinc(pole_block)
+                    E = ppars["tau2"] / ppars["tau3"]
+                    
+                    running_means.loc[age] = [age, mean['n'], mean['alpha95'], mean['dec'], mean['inc'], mean['k'], mean['csd'], E, mean_age]
+                else:
+                    running_means.loc[age] = [age, mean['n'], mean['alpha95'], mean['dec'], mean['inc'], mean['k'], mean['csd'], mean_age]
+    #         else:
+    #             print('No pseudo-VGPs in age bin from %1.1f to %1.1f Ma' % (window_min,window_max))
+    
     running_means.reset_index(drop=1, inplace=True)
-
+    
     return running_means
 
 def get_reference_poles (input_df,output_df,window_length, time_step, min_age, max_age, EP_data=[]):

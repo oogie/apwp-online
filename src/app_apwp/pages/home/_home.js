@@ -5,7 +5,7 @@ import { m, helpers, options } from '../../../shared/stdimports.js';
 import './_home.less';
 
 
-//components
+import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 
 
@@ -30,6 +30,8 @@ export const page = {
                         <br/><br/>
                         You will also find the curated paleomagnetic database used to compute the most recent global APWP of <a href='#!/referencedatabase'>Vaes et al. (2023)</a>.
                         Do you have new high-quality paleomagnetic data to add to future iterations of the global APWP, <a href='#!/referencedatabase'>let us know</a>!
+                        <br/><br/>
+                        See <a href={MANUAL_apwp}>the user manual</a> for more information on how to use the tools and the underlying methodology.
                         <br/><br/>
                         <br/><br/>
                     </div>
@@ -67,7 +69,7 @@ export const page = {
 
                 <div class='section content_width_narrow'>
                     <h2>More</h2>
-                    See the <a href="#!/referencedatabase">about page</a> for the underlying publications, technical details and contributors.
+                    See the <a href="#!/about">about page</a> for the underlying publications, technical details and contributors.
                     <br/><br/>
                     For more paleomagnetic data analysis tools and tectonic applications, see <a href='https://paleomagnetism.org/' target="_blank">Paleomagnetism.org</a>
                 </div>

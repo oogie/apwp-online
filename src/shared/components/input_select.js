@@ -17,7 +17,7 @@ export const comp = {
                 {vnode.attrs.title ? (<div class='title'>{vnode.attrs.title}</div>) : ""}
                 <select
                     onchange={(e) => {onChange(vnode, e.target.value);}}
-                    onkeyup={(e) => {if (e.which == 13) {e.target.blur()}; e.redraw = false;}}
+                    onkeyup={(e) => {if (e?.which === 13) {e.target.blur()}; e.redraw = false;}}
                     tabindex={vnode.attrs.tabindex || "1"}
 
                     value={vnode.state.value}

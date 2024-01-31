@@ -22,7 +22,7 @@ export const comp = {
 }
 
 function onclick(e, vnode) {
-    if (e.target.classList.contains("positionaldialog")) {
+    if (e?.target?.classList?.contains?.("positionaldialog")) {
         if (vnode.attrs.onClose) {
             vnode.attrs.onClose();
         }

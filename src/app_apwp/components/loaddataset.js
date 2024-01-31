@@ -34,6 +34,7 @@ export const comp = {
                     title="Add your dataset<br/><i>.xlsx or .csv</i>"
                     accept=".csv, .xls, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.spreadsheet"
                     onblur={(files) => {
+                        console.log("INPUT ON BLUR", files)
                         window.setTimeout(() => {
                             readFile(files[0])
                                 .then((workbook) => {return sheetSelection(vnode, workbook)})
@@ -123,6 +124,7 @@ export const comp = {
 
 
 function readFile(fileHandle) {
+    console.log("READFILE", fileHandle)
     return new Promise((resolve, reject) => {
         try {
             if (/^image/.test(fileHandle.type) || /^application\/pdf/.test(fileHandle.type)) {

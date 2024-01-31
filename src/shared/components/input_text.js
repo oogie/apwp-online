@@ -31,9 +31,9 @@ export const comp = {
                 {vnode.attrs.title ? (<div class='title'>{vnode.attrs.title}</div>) : ""}
                 <input
                     type="text"
-                    oninput={(e) => {onChange(vnode, e.target.value); e.redraw = true;}}
-                    onkeyup={(e) => {if (e.which == 13) {e.target.blur()}; e.redraw = false;}}
-                    onblur={(e) => {onBlur(vnode, e.target.value);}}
+                    oninput={(e) => {onChange(vnode, e?.target?.value); e.redraw = true;}}
+                    onkeyup={(e) => {if (e?.which === 13) {e.target.blur()}; e.redraw = false;}}
+                    onblur={(e) => {onBlur(vnode, e?.target?.value);}}
                     tabindex={vnode.attrs.tabindex || "1"}
 
                     value={vnode.state.value}

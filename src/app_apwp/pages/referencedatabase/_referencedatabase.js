@@ -52,23 +52,23 @@ export const page = {
                         <div class="txt_primary">Download model</div>
 
                         <div>gAPWP23</div>
-                        <div class='mobile_hidden'>16 january 2023 (Preprint)</div>
+                        <div class='mobile_hidden'>22 september 2023</div>
                         <div class='mobile_hidden'>Bram Vaes et al.</div>
-                        <a href="https://doi.org/10.31223/X55368" target="_blank">
-                            <img src="https://zenodo.org/badge/DOI/10.31223/X55368.svg" alt="DOI" />
+                        <a href="https://doi.org/10.1016/j.earscirev.2023.104547" target="_blank">
+                            <img src="https://zenodo.org/badge/DOI/10.1016/j.earscirev.2023.104547.svg" alt="DOI" />
                         </a>
-                        <div><a href={GAPWP23}>Download zip (352 kB)</a></div>
+                        <div><a href={GAPWP23}>Download zip (354 kB)</a></div>
                     </div>
                 </div>
 
                 <div class='section content_width_standard'>
                     <h2>Contribute to the next global APWP</h2>
                     <div class='content_width_narrow_left'>
-                        We encourage researchers to submit new new, high-quality paleomagnetic data obtained from stable plate interiors – after publication in a peer-reviewed journal – that may be included in the database.
+                        We encourage researchers to submit new, high-quality paleomagnetic data obtained from stable plate interiors – after publication in a peer-reviewed journal – that may be included in the database.
                         We also welcome new age data that provides better constraints on the rock and/or magnetization age of the paleomagnetic data that is included in the database.
                         <br/><br/>
                         <h4>How to submit your data</h4>
-                        Any suggestions for updating the age of specific paleopoles are highly appreciated, please send us an email on:
+                        Send us an email on:
                         <br /><br />
 
                         <center>

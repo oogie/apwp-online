@@ -233,9 +233,9 @@ function setupPathLabelsLayer(vnode) {
 function setupGraticule(vnode) {
     return new Graticule({
         showLabels: true, //show lat long labels
-        lonLabelFormatter: (lon) => {
-            return ""; //remove longitude labels
-        },
+        // lonLabelFormatter: (lon) => {
+        //     // return ""; //remove longitude labels
+        // },
         strokeStyle: new Stroke({
             color: 'rgba(0, 0, 0, 0.2)'
         }),

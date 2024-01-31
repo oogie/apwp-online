@@ -64,25 +64,20 @@ export const page = {
                             This license allows for free use and redistribution of the
                             source code.
                         </span>
+                        <br/><br/>
+                        <b>
+                            The source code of this webapplication:
+                        </b>
 
-                        <span>
-                            The complete (Python) source code will available on GitHub soon
-                        </span>
-
-                        {/* <a href="http://github.com/sj/paleolatitude" class='unobtrusive' target="_blank">
+                        <a href="https://github.com/oogie/apwp-online" class='unobtrusive' target="_blank">
                             <div class='githubpromo flex'>
                                 <i class="fa-brands fa-github fa-5x"></i>
                                 <span>
-                                    <a href='http://github.com/sj/paleolatitude' target="_blank">github.com/sj/paleolatitude</a><br />
-                                    <small class='txt_default_lesser'>@sj - Bas van Schaik</small>
+                                    <a href='https://github.com/oogie/apwp-online' target="_blank">github.com/oogie/apwp-online</a><br />
+                                    <small class='txt_default_lesser'>@oogie - Joren Paridaens</small>
                                 </span>
                             </div>
-                        </a> */}
-
-                        <h4>Data license</h4>
-                        <span>
-                            All (geophysical) (demo) data that is published on this web site is made available to the public domain.
-                        </span>
+                        </a>
 
                         <div class='section'></div>
                         <h3>Privacy and data security statement</h3>
@@ -125,28 +120,36 @@ export const page = {
 
                         <ul>
                             <li>
-                                Bram Vaes  (Utrecht University, the Netherlands)
+                                Bram Vaes<br/>
+                                <small>Utrecht University, the Netherlands; now at University of Milano-Bicocca, Italy</small>
                             </li>
                             <li>
-                                Douwe van Hinsbergen (Utrecht University, the Netherlands)
+                                Douwe van Hinsbergen<br/>
+                                <small>Utrecht University, the Netherlands</small>
                             </li>
                             <li>
-                                Lydian Boschman (Utrecht University, the Netherlands)
+                                Lydian Boschman<br/>
+                                <small>Utrecht University, the Netherlands</small>
                             </li>
                             <li>
-                                Peter Lippert (University of Utah at Salt Lake City, USA)
+                                Peter Lippert<br/>
+                                <small>University of Utah at Salt Lake City, USA</small>
                             </li>
                             <li>
-                                Guillaume Dupont-Nivet (Géosciences Rennes, France)
+                                Guillaume Dupont-Nivet<br/>
+                                <small>Géosciences Rennes, France</small>
                             </li>
                             <li>
-                                Mat Domeier (University of Oslo, Norway)
+                                Mat Domeier<br/>
+                                <small>University of Oslo, Norway</small>
                             </li>
                             <li>
-                                Nick Swanson-Hysell (University of California at Berkeley, USA)
+                                Nick Swanson-Hysell<br/>
+                                <small>University of California at Berkeley, USA</small>
                             </li>
                             <li>
-                                Wentao Huang (Institute of Tibetan Plateau Research of the Chinese Academy of Sciences, Beijing, China)
+                                Wentao Huang<br/>
+                                <small>Institute of Tibetan Plateau Research of the Chinese Academy of Sciences, Beijing, China</small>
                             </li>
                         </ul>
 
@@ -185,11 +188,7 @@ const TEAM_Vaes = (
         <h4>Bram Vaes</h4>
         <img src={PHOTO_Vaes} />
         <span>
-            Bram currently works as a PhD Candidate on the TRIGGER project, led by Prof. Douwe van
-            Hinsbergen, in which he mainly focuses on developing new approaches to the tectonic
-            applications of paleomagnetism. The main aim of his project is to construct a new global
-            apparent polar wander path, that serves as a paleomagnetic reference frame for paleogeograpy,
-            paleoclimate and tectonic studies.
+            Bram currently works as a postdoctoral researcher in the Coupled Earth Systems Group at the University of Milano-Bicocca, studying the interactions between tectonics and climate in the Cenozoic. Bram obtained his PhD in June 2023 at Utrecht University, during which he developed a new approach to using paleomagnetism for tectonic and paleogeographic applications. The main result of his project is a global apparent polar wander path that serves as a paleomagnetic reference frame for paleogeograpy, paleoclimate and tectonic studies. 
         </span>
     </div>
 )

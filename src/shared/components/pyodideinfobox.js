@@ -23,6 +23,9 @@ export const comp = {
 
 
                 {messages.map((msg) => {
+
+                    msg.content = (msg.content ?? "").replace("##__consoleShortcut__##", `(${localStorage.getItem("consoleShortcut")})`);
+
                     return (
                         <div class='message'>
                             <div class='title'>
@@ -30,12 +33,12 @@ export const comp = {
                                     {msg.spinner ? <i class="spinner fa-solid fa-gear fa-fw fa-spin"></i> : ""}
                                 </span>
                                 <span key="title">
-                                    {msg.title}
+                                    {m.trust(msg.title)}
                                 </span>
                             </div>
 
                             <div class='content'>
-                                {msg.content}
+                                {m.trust(msg.content)}
                             </div>
                         </div>
                     )

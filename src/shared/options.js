@@ -120,10 +120,9 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=180 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4839568.42, -4889334.8, 4839568.42, 4889334.8].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3571/{z}/{x}/{y}.png',
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
         },
         {
@@ -134,10 +133,9 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=-150 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4867195.52, -4883796.85, 4867195.52, 4883796.85].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3572/{z}/{x}/{y}.png',
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
         },
         {
@@ -148,10 +146,9 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4859208.99, -4886873.23, 4859208.99, 4886873.23].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png',
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
         },
         {
@@ -162,10 +159,9 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=-40 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4888719.37, -4849999.19, 4888719.37, 4849999.19].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3574/{z}/{x}/{y}.png',
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
         },
         {
@@ -176,10 +172,9 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4886873.23, -4859208.99, 4886873.23, 4859208.99].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3575/{z}/{x}/{y}.png',
+            // basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
         },
         {
@@ -190,12 +185,24 @@ export const options = {
             params: "+proj=laea +lat_0=90 +lon_0=90 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
             extent: [-4889334.8, -4839568.42, 4889334.8, 4839568.42].map((n) => {return n*2}),
             worldextent: [-180.0, 45.0, 180.0, 90.0],
-            basemapsrc: 'https://tiles.arcticconnect.ca/osm_3576/{z}/{x}/{y}.png',
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attributions: [
-                `Map &copy;<a href="https://arcticconnect.ca/">ArcticConnect</a><br/>`,
-                `Data &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
             ]
-        }
+        },
+        {
+            value: "EPSG:3413",
+            label: "WGS 84 / NSIDC Sea Ice Polar Stereographic North",
+
+            name: "EPSG:3413",
+            params: "+ proj=stere + lat_0=90 + lat_ts=70 + lon_0=-45 + x_0=0 + y_0=0 + datum=WGS84 + units=m + no_defs + type=crs",
+            extent: [-3314693.24, -3314693.24, 3314693.24, 3314693.24],
+            worldextent: [-180.0, 60.0, 180.0, 90.0],
+            basemapsrc: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            attributions: [
+                `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+            ]
+        },
     ]
 
 };

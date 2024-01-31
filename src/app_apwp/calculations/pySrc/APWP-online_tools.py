@@ -90,7 +90,7 @@ def getReferencePoles(options, sendProgress):
         return ref_pole
 
     elif ref_type == "refpole":
-        ref_pole = [ref_plon,ref_plat]
+        ref_pole = [ref_plon, ref_plat]
         # B95 = ref_A95 # is stored as B95 but is simply 95% confidence region of reference pole
 
         return ref_pole
@@ -179,7 +179,7 @@ def calcRPD(options, sendProgress):
 
         elif ref_type == 'geopole' or ref_type == 'refpole':
             ref_pole = options['ref_poles']
-            ppoles_mean = {'dec': ref_pole[0], 'inc': ref_pole[1]} # TODO JP: check with bram if this is correct
+            ppoles_mean = {'dec': ref_pole[0], 'inc': ref_pole[1]}
             B95 = 0
 
         # ---------------
@@ -266,8 +266,6 @@ def calcAPWP(options, sendProgress):
         output_df = get_reference_poles(df_range, df_APWP, window_length, time_step, t_min, t_max, EP_data)
         output_df['run'] = i
         df_APWP = df_APWP.append(output_df, ignore_index=True)
-        # TODO JP: instead of log messages, give feedback to JS about progress
-        # if i % 5 == 0:
         sendProgress({"title": "Calculating Custom APWP..", "content": "On iteration %s of %s" % (i+1, Nb)})
 
 
@@ -282,38 +280,41 @@ def calcAPWP(options, sendProgress):
     for center_age in mean_pole_ages:
         ref_poles = df_APWP.loc[df_APWP['age'] == center_age]
         ref_plons,ref_plats = ref_poles['plon'].tolist(),ref_poles['plat'].tolist()
-        mean = ipmag.fisher_mean(dec=ref_plons, inc=ref_plats)
 
-        if mean:
-            # Compute angular distances of pseudopoles to reference pole
-            D_ppoles=[]
-            for j in range(Nb):
-                ang_distance = pmag.angle([ref_plons[j],ref_plats[j]],[mean['dec'], mean['inc']])
-                D_ppoles.append(ang_distance[0])
+        if (len(ref_plons) > 0) and (len(ref_plats) > 0):
+            mean = ipmag.fisher_mean(dec=ref_plons, inc=ref_plats)
 
-            # Determine age range
-            min_age = center_age - window_length/2.
-            max_age = center_age + window_length/2.
+            if mean:
+                # Compute angular distances of pseudopoles to reference pole
+                D_ppoles=[]
 
-            # Compute P95
-            D_ppoles.sort()
-            ind_95perc=int(0.95*Nb)
-            P95 = D_ppoles[ind_95perc]
+                for j in range(len(ref_plons)):
+                    ang_distance = pmag.angle([ref_plons[j],ref_plats[j]],[mean['dec'], mean['inc']])
+                    D_ppoles.append(ang_distance[0])
 
-            # Compute parameters
-            mean_N_VGPs = ref_poles['N'].mean()
-            mean_K_VGPs = ref_poles['kappa'].mean()
-            mean_csd_VGPs = ref_poles['csd'].mean()
-            mean_E_VGPs = ref_poles['E'].mean()
-            mean_age = ref_poles['mean_age'].mean()
+                # Determine age range
+                min_age = center_age - window_length/2.
+                max_age = center_age + window_length/2.
 
-            # Compute elongation of reference poles
-            refpole_block = ipmag.make_di_block(ref_plons,ref_plats,unit_vector=False)
-            ppars = pmag.doprinc(refpole_block)
-            E = ppars["tau2"] / ppars["tau3"]
+                # Compute P95
+                D_ppoles.sort()
+                ind_95perc=int(0.95*len(ref_plons))
+                P95 = D_ppoles[ind_95perc]
 
-            # Add reference pole and metadata to dataframe
-            APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age]
+                # Compute parameters
+                mean_N_VGPs = ref_poles['N'].mean()
+                mean_K_VGPs = ref_poles['kappa'].mean()
+                mean_csd_VGPs = ref_poles['csd'].mean()
+                mean_E_VGPs = ref_poles['E'].mean()
+                mean_age = ref_poles['mean_age'].mean()
+
+                # Compute elongation of reference poles
+                refpole_block = ipmag.make_di_block(ref_plons,ref_plats,unit_vector=False)
+                ppars = pmag.doprinc(refpole_block)
+                E = ppars["tau2"] / ppars["tau3"]
+
+                # Add reference pole and metadata to dataframe
+                APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age]
 
     APWP.reset_index(drop=1, inplace=True)
     return APWP.to_dict('records');

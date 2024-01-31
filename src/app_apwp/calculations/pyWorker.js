@@ -1,10 +1,11 @@
 
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js");
+
 
 //calculation code
 import PY_aux from './pySrc/auxiliary.py'
 import PY_apwp from './pySrc/APWP-online_tools.py'
-import JSON_repodata from './repodata.json'
+import JSON_repodata from './repodata.json' //want to create a new lockfile? Use micropip.freeze() after init, see below
 
 //data used in calculation
 let datamodel = [
@@ -71,7 +72,7 @@ const initSteps = {
     },
     "error": {
         title:  "! Error initialising the calculation engine.",
-        content: "More information could be found in the javascript error console (ctrl-shift-i)",
+        content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##",
         spinner: false
     }
 }
@@ -98,7 +99,7 @@ async function loadPyodideAndPackages() {
 
         //3/5 Loading supporting libraries..
         sendProgress(initSteps["loadLibraries"])
-        await micropip.install(["pandas", "future", "scipy", "matplotlib", "pmagpy", "openpyxl"])
+        await micropip.install(["pandas", "future", "scipy", "matplotlib", "pmagpy==4.2.109", "openpyxl", "setuptools"])
 
         //4/5 Loading datamodel..
         sendProgress(initSteps["loadData"])
@@ -129,11 +130,16 @@ async function loadPyodideAndPackages() {
         self.pyodide.pyimport("auxiliary");
         self.pyodide.pyimport("APWP-online_tools");
 
+        // When you update pyodide or want to update a packache,
+        // this is used to create a new lockfile:
+        // console.log(micropip.freeze());
+
         //Calculation engine ready!
         sendProgress(initSteps["finished"])
     }
-    catch (e) {
-        console.error(e);
+    catch (err) {
+        console.error(err.message);
+        console.error(err);
         sendProgress(initSteps["error"])
     }
 }
@@ -196,9 +202,8 @@ function parsePaleoPoles(id, options) {
         pyresult.destroy();
     }
     catch (error) {
-        console.error(error);
-        sendProgress({title: "! Error while running calculations", content: "More information could be found in the javascript error console (ctrl-shift-i)", messagetime: 120*1000, spinner: false})
-        self.postMessage({ error, id })
+        sendProgress({ title: "! Error while running calculations", content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##", messagetime: 120*1000, spinner: false})
+        self.postMessage({ error: error.message, id })
     }
 }
 
@@ -216,9 +221,8 @@ function getReferencePoles(id, options) {
         pyresult.destroy();
     }
     catch (error) {
-        console.error(error);
-        sendProgress({title: "! Error while running calculations", content: "More information could be found in the javascript error console (ctrl-shift-i)", messagetime: 120*1000, spinner: false})
-        self.postMessage({ error, id })
+        sendProgress({ title: "! Error while running calculations", content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##", messagetime: 120*1000, spinner: false})
+        self.postMessage({ error: error.message, id })
     }
 }
 
@@ -234,9 +238,8 @@ function calcRPD(id, options) {
         pyresult.destroy();
     }
     catch (error) {
-        console.error(error);
-        sendProgress({title: "! Error while running calculations", content: "More information could be found in the javascript error console (ctrl-shift-i)", messagetime: 120*1000, spinner: false})
-        self.postMessage({ error, id })
+        sendProgress({ title: "! Error while running calculations", content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##", messagetime: 120*1000, spinner: false})
+        self.postMessage({ error: error.message, id })
     }
 }
 
@@ -252,8 +255,7 @@ function calcAPWP(id, options) {
         pyresult.destroy();
     }
     catch (error) {
-        console.error(error);
-        sendProgress({title: "! Error while running calculations", content: "More information could be found in the javascript error console (ctrl-shift-i)", messagetime: 120*1000, spinner: false})
-        self.postMessage({ error, id })
+        sendProgress({ title: "! Error while running calculations", content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##", messagetime: 120*1000, spinner: false})
+        self.postMessage({ error: error.message, id })
     }
 }

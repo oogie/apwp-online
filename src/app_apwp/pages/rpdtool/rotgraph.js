@@ -255,6 +255,11 @@ function createRefLocStr(rpd) {
 }
 
 function ExportXLSX(vnode) {
+    if (!Array.isArray(vnode.attrs.rpd)) {
+        alert("Error, something went wrong with exporting this data..");
+        return;
+    }
+
     let title = "Relative rotation";
 
     let fields = [
@@ -272,7 +277,7 @@ function ExportXLSX(vnode) {
         { label: "L_sig", value: "L_sig" },
         { label: "ref_plon", value: "ref_plon" },
         { label: "ref_plat", value: "ref_plat" },
-        { label: "ref_lon", value: "ref_lon" },
+        // { label: "ref_lon", value: "ref_lon" },
         { label: "A95", value: "A95" },
         { label: "B95", value: "B95" },
         { label: "plat", value: "plat" },
