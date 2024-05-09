@@ -439,13 +439,16 @@ def get_resampled_sed_poles(dataframe):
     new_dataframe = dataframe.copy()
 
     for index, row in new_dataframe.iterrows(): # iterate over rows of dataframe
-        if row.lithology == 'sedimentary':
-            # resample paleopole position
-            p_std = row.p_std if row.p_std>0 else 2.
-            #p_std = 3.
-            new_plon, new_plat = sedimentary_pole_resample(PP_lon = row.plon, PP_lat = row.plat, slon = row.slon, slat = row.slat, p_std = p_std, plot = False)
-            # replace value in updated dataframe
-            new_dataframe['plon'][index], new_dataframe['plat'][index] = new_plon[0],new_plat[0]
+
+        # check if lithology is present in row
+        if 'lithology' in row:
+            if row.lithology == 'sedimentary':
+                # resample paleopole position
+                p_std = row.p_std if row.p_std>0 else 2.
+                #p_std = 3.
+                new_plon, new_plat = sedimentary_pole_resample(PP_lon = row.plon, PP_lat = row.plat, slon = row.slon, slat = row.slat, p_std = p_std, plot = False)
+                # replace value in updated dataframe
+                new_dataframe['plon'][index], new_dataframe['plat'][index] = new_plon[0],new_plat[0]
 
     return new_dataframe
 
@@ -574,4 +577,5 @@ def get_pseudopoles (df,age_min,age_max,N_s,EP_data=[]):
 
         pseudopole = ipmag.fisher_mean(dec=equal_n_vgps['rlon'].tolist(), inc=equal_n_vgps['rlat'].tolist())
 
-    return [pseudopole['dec'],pseudopole['inc']]
+    return [pseudopole['dec'],pseudopole['inc'],len(df_vgps),pseudopole['k']]
+

@@ -37,7 +37,7 @@ export const options = {
     RPD_ref_loc_type:[
         {value: "mean_loc",    label: "Calculate mean location of input", default: true},
         {value: "one_ref_loc", label: "Set a custom single location"},
-        {value: "samp_loc",    label: "Use location of the sample it self"},
+        {value: "samp_loc",    label: "Use sampling location of each individual study"},
     ],
     RPD_ref_loc_lat: [
         {value: 90, label: "RPD_ref_loc_lat", default: true},

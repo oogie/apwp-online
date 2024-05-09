@@ -11,7 +11,7 @@ import pandas as pd
 import math
 import time
 from statistics import mean,median
-from pmagpy import pmag,ipmag,pmagplotlib
+from pmagpy import pmag, ipmag, pmagplotlib
 
 # ## Get relevant functions
 from auxiliary import (di2vgp,R_pole_space,P_pole_space,pseudo_DIs,get_resampled_sed_poles,get_pseudo_vgps,get_rotated_vgps,running_mean_APWP,get_reference_poles,
@@ -49,8 +49,7 @@ def parsePaleoPoles(options, sendProgress):
 
     df = df.astype({'N':'int'})
 
-
-    return df.to_dict('records');
+    return df.to_dict('records')
 
 def getReferencePoles(options, sendProgress):
     sendProgress({"title": "Loading in reference poles.."})
@@ -90,7 +89,7 @@ def getReferencePoles(options, sendProgress):
         return ref_pole
 
     elif ref_type == "refpole":
-        ref_pole = [ref_plon, ref_plat]
+        ref_pole = [options["ref_plon"], options["ref_plat"]]
         # B95 = ref_A95 # is stored as B95 but is simply 95% confidence region of reference pole
 
         return ref_pole
@@ -101,55 +100,56 @@ def getReferencePoles(options, sendProgress):
 def calcRPD(options, sendProgress):
     sendProgress({"title": "Calculating displacements.."})
 
-    ref_type = options['ref_type']
+    # Get input
+    input_poles = pd.DataFrame(data=options['paleopoles'])
+    settings = {
+        "Nb": options['Nb'],
+        "ref_window": options['ref_window'],
+        "ref_type": options['ref_type'],
+        "ref_loc_type": options['ref_loc_type']
+    }
 
-    df = pd.DataFrame(data=options['paleopoles'])
+    # Create an empty results list
+    results = []
 
-    # ### Choose setting
-    Nb = options['Nb'] #20
-    ref_window = options['ref_window'] #10
-    ref_loc_type = options['ref_loc_type'];
 
-    if ref_loc_type == 'mean_loc':
-        # get reference location from sampling locations
-        locations = ipmag.make_di_block(df['slon'].tolist(),df['slat'].to_list())
+    # Get reference location from sampling locations
+    if settings['ref_loc_type'] == 'mean_loc':
+        locations = ipmag.make_di_block(input_poles['slon'].tolist(),input_poles['slat'].to_list())
         loc_princ = pmag.doprinc(locations)
         mean_loc = [loc_princ['dec'],loc_princ['inc']]
 
-    # GET EULER ROTATION POLES
+    # Get Euler rotation poles
     Euler_poles_filename = options['Euler_poles']
-    if ref_type == 'gapwap':
+    if settings['ref_type'] == 'gapwap':
         EP_data = np.genfromtxt(Euler_poles_filename, skip_header=1, delimiter=',') # load csv file
     else:
         EP_data = []
 
-    # APPLY ALGORITHM TO EACH DATASET
-    B95s,Rs,RSs,drs,Ls,LSs,dls,age_errs = [],[],[],[],[],[],[],[]
-    ref_poles_lon,ref_poles_lat,ref_lon,ref_lat = [],[],[],[]
-
-    N_poles = len(df)
+    N_poles = len(input_poles)
     sendProgress({"title": "Calculating displacements..", "content": "Calculated 0 of %s poles" % (N_poles)})
 
+    # Loop through poles
     for i in range(N_poles):
         # GET KEY PARAMETERS
-        N_s,min_age_test,max_age_test = df['N'][i],df['min_age'][i],df['max_age'][i]
-        PP_lon,PP_lat,PP_A95 = df['plon'][i],df['plat'][i],df['A95'][i]
+        N_s,min_age_test,max_age_test = input_poles['N'][i],input_poles['min_age'][i],input_poles['max_age'][i]
+        PP_lon,PP_lat,PP_A95 = input_poles['plon'][i],input_poles['plat'][i],input_poles['A95'][i]
 
         # MODIFY REFERENCE DATA WINDOW
-        if (max_age_test-min_age_test) < ref_window:
-            max_age_test = df['age'][i]+(ref_window/2.)
-            min_age_test = df['age'][i]-(ref_window/2.)
+        if (max_age_test-min_age_test) < settings['ref_window']:
+            max_age_test = input_poles['age'][i]+(settings['ref_window']/2.)
+            min_age_test = input_poles['age'][i]-(settings['ref_window']/2.)
 
         # GET REFERENCE LOCATION
-        if ref_loc_type == 'one_ref_loc':
+        if settings['ref_loc_type'] == 'one_ref_loc':
             ref_loc = options['ref_loc']
-        elif ref_loc_type == 'mean_loc':
+        elif settings['ref_loc_type'] == 'mean_loc':
             ref_loc = mean_loc
         else:
-            ref_loc = [df['slon'][i],df['slat'][i]]
+            ref_loc = [input_poles['slon'][i],input_poles['slat'][i]]
 
         # ------
-        if ref_type == 'gapwap' or ref_type == 'custom':
+        if settings['ref_type'] == 'gapwap' or settings['ref_type'] == 'custom':
             ref_df = pd.DataFrame(data=options['ref_poles'])
 
             # GET PSEUDOPOLES
@@ -160,7 +160,7 @@ def calcRPD(options, sendProgress):
             df_ref_poles.reset_index()
 
             # GET PSEUDOPOLES
-            ppoles = [get_pseudopoles(df=df_ref_poles,age_min=min_age_test,age_max=max_age_test,N_s=N_s,EP_data=EP_data) for k in range(Nb)]
+            ppoles = [get_pseudopoles(df=df_ref_poles,age_min=min_age_test,age_max=max_age_test,N_s=N_s,EP_data=EP_data) for k in range(settings['Nb'])]
 
             # COMPUTE REFERENCE MEAN
             ppoles_mean = pmag.fisher_mean(ppoles) # compute mean of pseudopoles
@@ -168,22 +168,27 @@ def calcRPD(options, sendProgress):
 
             # COMPUTE ANGULAR DISTANCE OF PSEUDOPOLES TO REFERENCE MEAN
             D_ppoles=[]
-            for j in range(Nb):
+            for j in range(settings['Nb']):
                 ang_distance=pmag.angle(ppoles[j],ref_pole)
                 D_ppoles.append(ang_distance[0])
 
             # COMPUTE STATISTICS
-            D_ppoles.sort()
-            ind_95perc=int(0.95*Nb)-1
-            B95 = D_ppoles[ind_95perc]
-
-        elif ref_type == 'geopole' or ref_type == 'refpole':
+            D_ppoles.sort() # sort angular distances to mean pole
+            ind_95perc=int(0.95*settings['Nb'])-1 # find index of 95% percentile
+            B95 = D_ppoles[ind_95perc] # get B95
+            
+            ref_N_values = [pseudopole[2] for pseudopole in ppoles]
+            ref_N_mean = np.mean(ref_N_values) # compute mean N of simulated reference poles
+            ref_K_values = [pseudopole[3] for pseudopole in ppoles]
+            ref_K_mean = np.mean(ref_K_values) # compute mean K of simulated reference poles
+            
+        elif settings['ref_type'] == 'geopole' or settings['ref_type'] == 'refpole':
             ref_pole = options['ref_poles']
             ppoles_mean = {'dec': ref_pole[0], 'inc': ref_pole[1]}
             B95 = 0
+            ref_N_mean = 0
+            ref_K_mean = 0
 
-        # ---------------
-        # COMPUTE R AND P
 
         # compute rotation in pole-space
         R,dr = R_pole_space(ref_pole,B95,[PP_lon,PP_lat],PP_A95,ref_loc)
@@ -193,14 +198,13 @@ def calcRPD(options, sendProgress):
         else:
             RS = False
 
-
         # compute latitudinal displacement in pole-space
-        plat_ref_pole = 90 - pmag.angle(ref_pole,ref_loc)[0]
-        plat_obs_pole = 90 - pmag.angle([PP_lon,PP_lat],ref_loc)[0]
+        # plat_ref_pole = 90 - pmag.angle(ref_pole,ref_loc)[0]
+        # plat_obs_pole = 90 - pmag.angle([PP_lon,PP_lat],ref_loc)[0]
 
-        if 'EI_unc_plat' in df:
-            if df['EI_unc_plat'][i]>0:
-                PP_A95 = df['EI_unc_plat'][i]
+        if 'EI_unc_plat' in input_poles:
+            if input_poles['EI_unc_plat'][i]>0:
+                PP_A95 = input_poles['EI_unc_plat'][i]
 
         P,dp = P_pole_space(ref_pole,B95,[PP_lon,PP_lat],PP_A95,ref_loc)
         L = P*-1
@@ -211,70 +215,73 @@ def calcRPD(options, sendProgress):
         else:
             LS = False
 
-        # Append values to lists
-        B95s.append(B95)
-        Rs.append(R)
-        RSs.append(RS)
-        drs.append(dr)
-        Ls.append(L)
-        LSs.append(LS)
-        dls.append(dl)
-        age_errs.append(df['max_age'][i]-df['age'][i])
-        ref_poles_lon.append(ppoles_mean['dec'])
-        ref_poles_lat.append(ppoles_mean['inc'])
-        ref_lon.append(ref_loc[0])
-        ref_lat.append(ref_loc[1])
+        ref_DI = pmag.vgp_di(ref_pole[1],ref_pole[0],ref_loc[1],ref_loc[0]) # compute reference direction
+    
+        # Append the result
+        results.append({
+            "input_pole": input_poles.to_dict('records')[i],
+            "B95": B95, "age_err": input_poles['max_age'][i]-input_poles['age'][i],
+            "R": { "R": R, "R_sig": RS, "delta_R": dr },
+            "L": { "L": L, "L_sig": LS, "delta_L": dl },
+            "ref": {
+                "pole_lon": ppoles_mean['dec'], "pole_lat": ppoles_mean['inc'],
+                "lon": ref_loc[0], "lat": ref_loc[1],
+                "dec": ref_DI[0], "inc": ref_DI[1],
+                "mean_N": ref_N_mean, "mean_K": ref_K_mean
+            }
+        })
 
         sendProgress({"title": "Calculating displacements..", "content": "Calculated %s of %s poles" % (i+1, N_poles)})
 
-    # In[7]:
-    temp_df = df[['name', 'age', 'min_age', 'max_age', 'N', 'plon','plat','A95']].copy()
-    results = pd.DataFrame(
-        list(zip(ref_poles_lon,ref_poles_lat,ref_lon,ref_lat,B95s,Rs,RSs,drs,Ls,LSs,dls)),
-        columns=['ref_plon','ref_plat','ref_lon','ref_lat','B95','R','R_sig','delta_R','L','L_sig','delta_L']
-    )
-    output_df = pd.concat([temp_df,results],axis=1)
-    return output_df.to_dict('records');
+    # return the results dictionary
+    return results
 
 def calcAPWP(options, sendProgress):
     sendProgress({"title": "Calculating Custom APWP.."})
 
-    df = pd.DataFrame(data=options['paleopoles'])
-
-    # SETTINGS
-    window_length = options['window_length'] #2
-    time_step = options['time_step'] #1
-    t_min = options['t_min'] #5
-    t_max = options['t_max'] #25
-
-    Nb = options['Nb'] #20
+    # Get input
+    input_poles = pd.DataFrame(data=options['paleopoles'])
+    settings = {
+        "Nb": options['Nb'],
+        "window_length": options['window_length'],
+        "time_step": options['time_step'],
+        "t_min": options['t_min'],
+        "t_max": options['t_max']
+    }
+ 
 
     # ------
     # get data
-    df_range = df[(df.min_age <= t_max+window_length/2.) & (df.max_age >= t_min-window_length/2.)].copy()
+    df_range = input_poles[(input_poles.min_age <= settings['t_max']+settings['window_length']/2.) & (input_poles.max_age >= settings['t_min']-settings['window_length']/2.)].copy()
 
     df_APWP = pd.DataFrame(columns=['age','run','N','A95','plon','plat','kappa','csd','mean_age'])
     EP_data=[]
 
+    # get mean sampling location to append to the output later
+    locations = ipmag.make_di_block(df_range['slon'].tolist(), df_range['slat'].to_list())
+    loc_princ = pmag.doprinc(locations)
+    slat, slon = loc_princ['inc'],loc_princ['dec']
+
 
     # ## Generate reference poles
-
     # COMPUTE REFERENCE POLES FOR EACH TIME STEP
     # Nb IS NUMBER OF ITERATIONS
-
-    for i in range(Nb):
-        output_df = get_reference_poles(df_range, df_APWP, window_length, time_step, t_min, t_max, EP_data)
+    
+    for i in range(settings['Nb']):
+        output_df = get_reference_poles(df_range, df_APWP, settings['window_length'], settings['time_step'], settings['t_min'], settings['t_max'], EP_data)
         output_df['run'] = i
         df_APWP = df_APWP.append(output_df, ignore_index=True)
-        sendProgress({"title": "Calculating Custom APWP..", "content": "On iteration %s of %s" % (i+1, Nb)})
+        sendProgress({"title": "Calculating Custom APWP..", "content": "On iteration %s of %s" % (i+1, settings['Nb'])})
 
+
+    sendProgress({"title": "Calculating Custom APWP..", "content": "Finalizing results"})
 
     # ## Compute custom APWP
     # define center ages of time windows
-    mean_pole_ages = np.arange(t_min, t_max + time_step, time_step)
+    mean_pole_ages = np.arange(settings['t_min'], settings['t_max'] + settings['time_step'], settings['time_step'])
 
-    # define dataframe
-    APWP = pd.DataFrame(columns=['center_age','min_age','max_age','N','P95','plon','plat','mean_K','mean_csd','mean_E','elong','age'])
+    # define output dataframe
+    APWP = pd.DataFrame(columns=['center_age','min_age','max_age','N','P95','plon','plat','mean_K','mean_csd','mean_E','elong','age','slon','slat','name'])
 
     # compute APWP
     for center_age in mean_pole_ages:
@@ -293,8 +300,8 @@ def calcAPWP(options, sendProgress):
                     D_ppoles.append(ang_distance[0])
 
                 # Determine age range
-                min_age = center_age - window_length/2.
-                max_age = center_age + window_length/2.
+                min_age = center_age - settings['window_length']/2.
+                max_age = center_age + settings['window_length']/2.
 
                 # Compute P95
                 D_ppoles.sort()
@@ -313,8 +320,10 @@ def calcAPWP(options, sendProgress):
                 ppars = pmag.doprinc(refpole_block)
                 E = ppars["tau2"] / ppars["tau3"]
 
+                name = 'pole at ' + str(np.round(mean_age,2)) + ' Ma'
+
                 # Add reference pole and metadata to dataframe
-                APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age]
+                APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age,slon,slat,name]
 
     APWP.reset_index(drop=1, inplace=True)
-    return APWP.to_dict('records');
+    return APWP.to_dict('records')

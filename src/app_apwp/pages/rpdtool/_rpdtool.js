@@ -6,7 +6,9 @@ import './_rpdtool.less';
 
 
 //assets
-import Demo_input from "../../assets/demo_input.xlsx";
+import Demo_input_XLSX from "../../assets/demo_input.xlsx";
+import Demo_input_CSV_NEJ from "../../assets/demo_input_NEJ.csv";
+import Demo_input_CSV_SWJ from "../../assets/demo_input_SWJ.csv";
 import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 
@@ -48,6 +50,11 @@ export const page = {
         }
 
         let inputDisabled = vnode.state.caclbusy;
+        let outputWarnings = createOutputWarnings(vnode.state.activecalc);
+
+        let demodataloaded = vnode.state.datasets.filter((ds) => {
+            return ds.isdemo || ds.name === "DEMO - South west Japan" || ds.name === "DEMO - North east Japan";
+        }).length > 1;
 
         return (
             <div class="page rpdtool">
@@ -57,7 +64,9 @@ export const page = {
                     <h2>RPD Tool</h2>
                     The relative paleomagnetic displacement (RPD) tool allows the determination of displacements using the comparison metric that was introduced by <a href='https://doi.org/10.1029/2022JB023953' target="_blank">Vaes et al. (2022)</a>.
                     <br/><br/>
-                    <a href={Demo_input}>Download demo input file (XLSX)</a>
+                    Download:<br />
+                    <a href={Demo_input_XLSX}>Example input file (XSLX, contains both Japan datasets)</a><br />
+                    <a href={Demo_input_CSV_NEJ}>Example input file (CSV, North East Japan)</a><br />
                     <br /><br />
                     <Showmore>
                         <h4>What</h4>
@@ -114,9 +123,18 @@ export const page = {
                     <div class='datasetgrid'>
                         <div class="flexcolumn">
                             <Loaddataset onnewfile={() => { getData(vnode); }} />
-                            <button onclick={() => { addDemoData(vnode); }}>
-                                Load in demo data
-                            </button>
+                            <Choose>
+                                <When condition={!demodataloaded}>
+                                    <button onclick={() => { addDemoData(vnode); }}>
+                                        Load in demo data
+                                    </button>
+                                </When>
+                                <Otherwise>
+                                    <center>
+                                        <span class='txt_default_lesser'>Demo data is loaded</span>
+                                    </center>
+                                </Otherwise>    
+                            </Choose>
                         </div>
 
                         {vnode.state.datasets.map((dataset) => {
@@ -316,37 +334,57 @@ export const page = {
                 </div>
 
                 <If condition={vnode.state.activecalc !== undefined}>
-                    <div class='section content_width_standard'>
-                        <div class='flex' style='align-items: baseline;'>
-                            <h4>Rotation and displacement</h4>
-                            <span class='txt_default_lesser'>
-                                calculated in {helpers.general.displayElapsedTime(vnode.state.activecalc.calculationtime)}
-                                , <a href="javascript:" onclick={() => {vnode.state.isOpen.calcSettings = true}}>with these settings</a>
-                            </span>
-                        </div>
-                        <br/>
+                    <Choose>
+                        <When condition={vnode.state.activecalc.results[0].input_pole === undefined}>
+                            <div class='section content_width_standard'>
+                                <h4>Your previous calculation was stored with an old data model</h4>
+                                Please re-calculate to update the data model.
+                            </div>
+                        </When>
+                        <Otherwise>
+                            <div class='section content_width_standard'>
+                                <div class='flex' style='align-items: baseline;'>
+                                    <h4>Rotation and displacement</h4>
+                                    <span class='txt_default_lesser'>
+                                        calculated in {helpers.general.displayElapsedTime(vnode.state.activecalc.calculationtime)}
+                                        , <a href="javascript:" onclick={() => { vnode.state.isOpen.calcSettings = true }}>with these settings</a>
+                                    </span>
+                                </div>
+                                <br />
 
-                        <div class='flexequal'>
-                            <Rotgraph
-                                rpd={vnode.state.activecalc.results}
-                                />
-                            <Dispgraph
-                                rpd={vnode.state.activecalc.results}
-                                />
-                        </div>
-                    </div>
+                                <If condition={outputWarnings.length > 0}>
+                                    <div class='warnings'>
+                                        {outputWarnings.map((warning) => {
+                                            return (<div class="warning">
+                                                <i class="fa-solid fa-triangle-exclamation"></i> WARNING: {warning}
+                                            </div>)
+                                        })}
+                                    </div>
+                                </If>
 
-                    <Dialog
-                        isAlert={true}
-                        isOpen={vnode.state.isOpen.calcSettings}
-                        onAnswer={() => {vnode.state.isOpen.calcSettings = false}}
-                    >
-                        <h4>Calculation settings</h4>
-                        Number of iterations: {vnode.state.activecalc.options.Nb}<br/>
-                        Time window: {vnode.state.activecalc.options.ref_window}Ma<br/>
-                        Reference location: {options.findLabel("RPD_ref_loc_type", vnode.state.activecalc.options.ref_loc_type)}<br/>
-                        Date: {helpers.general.displayFullDate(vnode.state.activecalc.options.startTime)}
-                    </Dialog>
+                                <div class='flexequal'>
+                                    <Rotgraph
+                                        rpd={vnode.state.activecalc.results}
+                                    />
+                                    <Dispgraph
+                                        rpd={vnode.state.activecalc.results}
+                                    />
+                                </div>
+                            </div>
+
+                            <Dialog
+                                isAlert={true}
+                                isOpen={vnode.state.isOpen.calcSettings}
+                                onAnswer={() => { vnode.state.isOpen.calcSettings = false }}
+                            >
+                                <h4>Calculation settings</h4>
+                                Number of iterations: {vnode.state.activecalc.options.Nb}<br />
+                                Time window: {vnode.state.activecalc.options.ref_window}Ma<br />
+                                Reference location: {options.findLabel("RPD_ref_loc_type", vnode.state.activecalc.options.ref_loc_type)}<br />
+                                Date: {helpers.general.displayFullDate(vnode.state.activecalc.options.startTime)}
+                            </Dialog>
+                        </Otherwise>
+                    </Choose> 
                 </If>
             </div>
         )
@@ -376,6 +414,52 @@ function getData(vnode) {
     })
 }
 
+function createOutputWarnings(activecalc) {
+    let warnings = [];
+
+    //don't show these warnings when there is no activecalc
+    if (activecalc === undefined || activecalc.status !== "done") {
+        return warnings;
+    }
+
+    //don't show these warnings when the results are not of the new data model
+    if (activecalc.results[0].input_pole === undefined) {
+        return warnings;
+    }
+
+    //don't show these warnings when the reference type is a geopole
+    if (activecalc.options.ref_type === "geopole") {
+        return warnings;
+    }
+
+
+    //n_check: if ref_mean_N < N for any pole show a warning
+    let n_check_failed = activecalc.results.reduce((failed, cur) => {
+        if (cur.ref.mean_N < cur.input_pole.N) { failed.push(cur); }
+        return failed;
+    }, []);
+
+    if (n_check_failed.length > 0) {
+        let names = n_check_failed.map((pole) => { return pole.input_pole.name }).join(", ");
+        warnings.push(`the reference pole is computed from a lower number of sites than the input paleopole (N_ref < N) for entries: ${names}`);
+    }
+
+
+    //k_check if ref_mean_K < 10 for any pole show a warning
+    let k_check_failed = activecalc.results.reduce((failed, cur) => {
+        if (cur.ref.mean_K < 10) { failed.push(cur); }
+        return failed;
+    }, []);
+
+    if (k_check_failed.length > 0) {
+        let names = k_check_failed.map((pole) => { return pole.input_pole.name }).join(", ");
+        warnings.push(`the reference pole is computed from re-sampled sites with (K < 10) for entires: ${names}`);
+    }
+
+
+    return warnings;
+}
+
 function calcRPD(vnode, dataset, referenceset) {
     if (dataset === undefined) return;
 
@@ -392,16 +476,7 @@ function calcRPD(vnode, dataset, referenceset) {
         return newestAPWP;
     }, undefined)
 
-    //tmp fix, TODO JP: check with Bram if this is correct
-    // if (newestAPWP) {
-    //     newestAPWP.results = newestAPWP.results.map((loc) => {
-    //         loc["slon"] = loc["plon"];
-    //         loc["slat"] = loc["plat"];
-    //         return loc;
-    //     })
-    //     console.log(newestAPWP)
-    // }
-
+    // check if the passing on of the results works with the new format
     let data = helpers.sessionStorage.getOption("RPD_datasource") === "apwp" ? newestAPWP?.results : dataset.data.poles
     let storedReference = {
         ref_type: undefined,
@@ -498,7 +573,14 @@ function calcRPD(vnode, dataset, referenceset) {
 
 function addDemoData(vnode) {
     let promises = config.demodata.map((dataset) => {
-        return helpers.docstore.set("dataset", dataset);
+        //check if the dataset is already loaded
+        let exists = vnode.state.datasets.find((ds) => {return ds.name === dataset.name});
+        if (exists) {
+            return Promise.resolve();
+        }
+        else {
+            return helpers.docstore.set("dataset", dataset);
+        }
     });
 
     Promise.all(promises).then(() => {
@@ -517,3 +599,4 @@ function exportDocStore() {
         helpers.general.downloadFile('paleolatitude_docstore.txt', serialized);
     });
 }
+

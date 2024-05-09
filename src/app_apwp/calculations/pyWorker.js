@@ -194,7 +194,7 @@ function parsePaleoPoles(id, options) {
     try {
         let pyresult = pyPackage.parsePaleoPoles(pyodide.toPy(options), sendProgress);
         let jsresult = pyresult.toJs();
-        let results = jsresult.map((m) => {return Object.fromEntries(m)});
+        let results = unpackMapsRecursive(jsresult);
 
         //clear last message
         sendProgress({messagetime: 0})
@@ -211,9 +211,7 @@ function getReferencePoles(id, options) {
     try {
         let pyresult = pyPackage.getReferencePoles(pyodide.toPy(options), sendProgress);
         let jsresult = pyresult.toJs();
-        let results = jsresult;
-        if (jsresult instanceof Map === true)
-            results = jsresult.map((m) => {return Object.fromEntries(m)});
+        let results = unpackMapsRecursive(jsresult);
 
         //clear last message
         sendProgress({messagetime: 0})
@@ -230,7 +228,7 @@ function calcRPD(id, options) {
     try {
         let pyresult = pyPackage.calcRPD(pyodide.toPy(options), sendProgress);
         let jsresult = pyresult.toJs();
-        let results = jsresult.map((m) => {return Object.fromEntries(m)});
+        let results = unpackMapsRecursive(jsresult);
 
         //clear last message
         sendProgress({messagetime: 0})
@@ -247,7 +245,7 @@ function calcAPWP(id, options) {
     try {
         let pyresult = pyPackage.calcAPWP(pyodide.toPy(options), sendProgress);
         let jsresult = pyresult.toJs();
-        let results = jsresult.map((m) => {return Object.fromEntries(m)});
+        let results = unpackMapsRecursive(jsresult);
 
         //clear last message
         sendProgress({messagetime: 0})
@@ -257,5 +255,18 @@ function calcAPWP(id, options) {
     catch (error) {
         sendProgress({ title: "! Error while running calculations", content: "More information could be found in the javascript <br/>error console ##__consoleShortcut__##", messagetime: 120*1000, spinner: false})
         self.postMessage({ error: error.message, id })
+    }
+}
+
+
+function unpackMapsRecursive(map) {
+    if (map instanceof Map) {
+        return Object.fromEntries([...map].map(([k, v]) => [k, unpackMapsRecursive(v)]))
+    }
+    else if (Array.isArray(map)) {
+        return map.map((m) => unpackMapsRecursive(m))
+    }
+    else {
+        return map
     }
 }

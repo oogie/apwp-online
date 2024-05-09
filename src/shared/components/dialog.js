@@ -43,11 +43,11 @@ export const comp = {
 
                         </When>
                         <When condition={vnode.attrs.isAlert}>
-                            <button autofocus onclick={() => {e.redraw = false; answer(vnode, true)}}>Ok</button>
+                            <button autofocus onclick={(e) => {e.redraw = false; answer(vnode, true)}}>Ok</button>
                         </When>
                         <Otherwise>
-                            <button onclick={() => {e.redraw = false; answer(vnode, false)}}>Cancel</button>
-                            <button autofocus onclick={() => {e.redraw = false; answer(vnode, true)}}>Confirm</button>
+                            <button onclick={(e) => {e.redraw = false; answer(vnode, false)}}>Cancel</button>
+                            <button autofocus onclick={(e) => {e.redraw = false; answer(vnode, true)}}>Confirm</button>
                         </Otherwise>
                     </Choose>
                 </div>

@@ -84,74 +84,33 @@ export const page = {
                             </div>
                         </a>
 
-                        <div class='section'>
-                            <h3>Privacy and data security statement</h3>
-                            <span>
-                                All data uploaded to our server via the form on the Reference Database page is handled with
-                                care. It is not allowed to upload any sensitive or personal data to our servers.
-                            </span>
-                        </div>
+                        <div class='section'></div>
+                        <h3>Privacy and data security statement</h3>
+                        <span>
+                            All data uploaded to our server via the form on the Reference Database page is handled with
+                            care. It is not allowed to upload any sensitive or personal data to our servers.
+                        </span>
 
-                        <div class='section'>
-                            <h3>Locally stored data</h3>
-                            <span>
-                                Imported datasets and computation results are stored locally in your browser. This data is not
-                                shared with any one other than you. 
-                                <br/><br />
-                                <button class='btn' onclick={(e) => {
-                                    vnode.state.isOpen.clearDocStore = true;
-                                }}>Delete all locally stored data</button>
+                        <div class='section'></div>
+                        <h3>Locally stored data</h3>
+                        <span>
+                            Imported datasets and computation results are stored locally in your browser. This data is not
+                            shared with any one other than you. 
+                            <br/><br />
+                            <button class='btn' onclick={(e) => {
+                                vnode.state.isOpen.clearDocStore = true;
+                            }}>Delete all locally stored data</button>
 
-                                <Dialog
-                                    isOpen={vnode.state.isOpen.clearDocStore}
-                                    onAnswer={(resp) => { clearDocStore(vnode, resp); }}>
-                                    <h4>Are you sure?</h4>
-                                    Removing all locally stored data can not be undone! All uploaded datasets and computation results will be lost.
-                                </Dialog>
+                            <Dialog
+                                isOpen={vnode.state.isOpen.clearDocStore}
+                                onAnswer={(resp) => { clearDocStore(vnode, resp); }}>
+                                <h4>Are you sure?</h4>
+                                Removing all locally stored data can not be undone! All uploaded datasets and computation results will be lost.
+                            </Dialog>
 
-                                {/* <br /> */}
-                                {/* <button class='btn' onclick={(e) => { exportDocStore(vnode) }}>Export all locally stored data to a file (experimental)</button> */}
-                            </span> 
-                        </div>
-
-                        <div class='section changelog'>
-                            <h3>Changelog</h3>
-                            <div class='versionheader'>
-                                <h4>Version 1.2</h4>
-                                <span>&mdash; May 2024</span>
-                            </div>
-                            <ul>
-                                <li>Updated: the user manual</li>
-                                <li>Added: slat, slon and name columns to the xlsx/csv output of the APWP tool</li>
-                                <li>Added: the ability to use the output files of the APWP tool as input dataset</li>
-                                <li>Fixed: the demo data can no longer be loaded in multiple times</li>
-                                <li>Fixed: a python runtime error when the input columns lithology or plateID missing</li>
-                                <li>Fixed: various small textual errors throughout the website</li>
-                            </ul>
-
-                            <div class='versionheader'>
-                                <h4>Version 1.1</h4>
-                                <span>&mdash; Feb 2024</span>
-                            </div>
-                            <ul>
-                                <li>Added: the user manual</li>
-                                <li>Added: the values ref_dec ref_inc ref_mean_N ref_mean_K to the output of the RDP tool</li>
-                                <li>Added: the RDP tool will give a warning when <code>N_ref &lt; N</code> or <code>K &lt; 10</code> for any pole</li>
-                                <li>Added: option to import and export with .csv files</li>
-                                <li>Added: better input validation and error messages</li>
-                                <li>Fixed: any setting where the input was <code>0</code> was set to the default (e.g. Minimum age became 5ma instead of 0ma)</li>
-                                <li>Fixed: the reference data of the plate 101 (North America) was only available up until 100ma, this is now up to 320ma</li>
-                                <li>Fixed: various small textual errors throughout the website</li>
-                            </ul>
-
-                            <div class='versionheader'>
-                                <h4>Version 1.0</h4>
-                                <span>&mdash; May 2023</span>
-                            </div>
-                            <ul>
-                                <li>Beta release of version 1.0</li>
-                            </ul>
-                        </div>
+                            {/* <br /> */}
+                            {/* <button class='btn' onclick={(e) => { exportDocStore(vnode) }}>Export all locally stored data to a file (experimental)</button> */}
+                        </span> 
 
 
                     </div>
@@ -161,13 +120,10 @@ export const page = {
                         A steering committee will once a year update the paleomagnetic database
                         behind the global APWP that is running on this website. Once this is done, 
                         a new version of the APWP will be published on this site, and if significant changes occur, 
-                        an accompanying peer-reviewed publication will follow. 
-                        {/* The current composition of the steering committee is: */}
+                        an accompanying peer-reviewed publication will follow. The current composition of the 
+                        steering committee is:
 
-                        <br/><br/>
-                        The members of the 2024 committee will be appointed soon and listed here.
-
-                        {/* <ul>
+                        <ul>
                             <li>
                                 Bram Vaes<br/>
                                 <small>Utrecht University, the Netherlands; now at University of Milano-Bicocca, Italy</small>
@@ -200,17 +156,26 @@ export const page = {
                                 Wentao Huang<br/>
                                 <small>Institute of Tibetan Plateau Research of the Chinese Academy of Sciences, Beijing, China</small>
                             </li>
-                        </ul> */}
+                        </ul>
 
-                        <div class="section">
-                            <h3>APWP-Online development team</h3>
-                            <br />
-                            <span>
-                                {TEAM_Vaes}
-                                {TEAM_Hinsbergen}
-                                {TEAM_Paridaens}
-                            </span>
+                        <br /><br />
+                        <h3>APWP-Online development team</h3>
+                        <br />
+                        <span>
+                            {TEAM_Vaes}
+                            {TEAM_Hinsbergen}
+                            {TEAM_Paridaens}
+                        </span>
+
+
+                        <h3>Changelog</h3>
+                        <div class='versionheader'>
+                            <h4>Version 1.0</h4>
+                            <span>&mdash; May 2023</span>
                         </div>
+                        <ul>
+                            <li>Release of version 1.0</li>
+                        </ul>
 
                    </div> 
 

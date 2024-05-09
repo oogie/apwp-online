@@ -71,6 +71,16 @@
         align-self: flex-start;
     }
 
+    .warnings .warning {
+        padding: 1rem;
+        background: #ff830024;
+        color: #ff8300;
+
+        & + .warning {
+            margin-top: 1rem;
+        }
+    }
+
     .activeset {
         flex-grow: 1;
 

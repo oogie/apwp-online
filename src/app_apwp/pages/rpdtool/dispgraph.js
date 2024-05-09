@@ -43,6 +43,9 @@ export const comp = {
                         <a onclick={() => {ExportXLSX(vnode); vnode.state.isOpen.export = false }} href='javascript:'>
                             <i class="fa-solid fa-download fa-fw"></i> Download XLSX
                         </a>
+                        <a onclick={() => {ExportXLSX(vnode, "csv"); vnode.state.isOpen.export = false }} href='javascript:'>
+                            <i class="fa-solid fa-download fa-fw"></i> Download CSV
+                        </a>
                         <a onclick={() => { vnode.state.graph.exportChartLocal({ type: 'application/pdf', filename: 'Paleolatitude difference APWP-online.org' }); vnode.state.isOpen.export = false }} href='javascript:'>
                             <i class="fa-solid fa-download fa-fw"></i> Download PDF
                         </a>
@@ -106,9 +109,9 @@ function initGraph(vnode) {
 
                 return `
                     <div>
-                        <div style='color:${this.color};'><b>${context.name}</b></div>
-                        <div>Age: <b>${context.age.toFixed(1)} Ma</b> &pm; <small>${(context.age - context.min_age).toFixed(1)} Ma</small></div>
-                        <div>Diff: <b>${context.L.toFixed(1)}°</b> &pm; <small>${context.delta_L.toFixed(1)}°</small></div>
+                        <div style='color:${this.color};'><b>${context.input_pole.name}</b></div>
+                        <div>Age: <b>${context.input_pole.age.toFixed(1)} Ma</b> &pm; <small>${(context.input_pole.age - context.input_pole.min_age).toFixed(1)} Ma</small></div>
+                        <div>Diff: <b>${context.L.L.toFixed(1)}°</b> &pm; <small>${context.L.delta_L.toFixed(1)}°</small></div>
                     </div>
                 `
             }
@@ -191,12 +194,12 @@ function updateSeries(vnode) {
         color: "#000",
         data: vnode.attrs.rpd.map((p) => {
             return [
-                {x: p.max_age === 0 ? null : p.max_age, y: p.L, marker: { symbol: 'vline', lineWidth: 0.5, lineColor: null }},
-                {x: p.max_age === 0 ? null : p.min_age, y: p.L, marker: { symbol: 'vline', lineWidth: 0.5, lineColor: null }},
-                {x: null, y: null},
-                {x: p.age, y: p.L + p.delta_L, marker: { symbol: 'hline', lineWidth: 0.5, lineColor: null }},
-                {x: p.age, y: p.L - p.delta_L, marker: { symbol: 'hline', lineWidth: 0.5, lineColor: null }},
-                {x: null, y: null},
+                { x: p.input_pole.max_age === 0 ? null : p.input_pole.max_age, y: p.L.L, marker: { symbol: 'vline', lineWidth: 0.5, lineColor: null }},
+                { x: p.input_pole.max_age === 0 ? null : p.input_pole.min_age, y: p.L.L, marker: { symbol: 'vline', lineWidth: 0.5, lineColor: null }},
+                { x: null, y: null },
+                { x: p.input_pole.age, y: p.L.L + p.L.delta_L, marker: { symbol: 'hline', lineWidth: 0.5, lineColor: null }},
+                { x: p.input_pole.age, y: p.L.L - p.L.delta_L, marker: { symbol: 'hline', lineWidth: 0.5, lineColor: null }},
+                { x: null, y: null }
             ]
         }).flat()
     });
@@ -216,13 +219,13 @@ function updateSeries(vnode) {
         data: vnode.attrs.rpd.map((p) => {
             return {
                 marker: {
-                    fillColor: p.L_sig ? undefined : "white",
-                    lineWidth: p.L_sig ? undefined : 1,
+                    fillColor: p.L.L_sig ? undefined : "white",
+                    lineWidth: p.L.L_sig ? undefined : 1,
                     lineColor: "#0652DD",
                     symbol: "circle"
                 },
-                x: p.age,
-                y: p.L,
+                x: p.input_pole.age,
+                y: p.L.L,
                 context: p
             }
         })
@@ -238,10 +241,10 @@ function createRefLocStr(rpd) {
         if (acc === null) { return acc; }
 
         //initialise acc at the first run
-        if (acc === undefined) { acc = [cur.ref_lon, cur.ref_lat] }
+        if (acc === undefined) { acc = [cur.ref.lon, cur.ref.lat] }
 
         //check if the ref loc is the same as the previous items, if not set acc to null
-        if (cur.ref_lon !== acc[0] || cur.ref_lat !== acc[1]) {
+        if (cur.ref.lon !== acc[0] || cur.ref.lat !== acc[1]) {
             acc = null;
         }
 
@@ -256,7 +259,9 @@ function createRefLocStr(rpd) {
     return refLocStr;
 }
 
-function ExportXLSX(vnode) {
+function ExportXLSX(vnode, filetype) {
+    filetype = filetype ?? "xlsx";
+
     if (!Array.isArray(vnode.attrs.rpd)) {
         alert("Error, something went wrong with exporting this data..");
         return;
@@ -265,40 +270,29 @@ function ExportXLSX(vnode) {
     let title = "Paleolatitude difference";
 
     let fields = [
-        { label: "name", value: "name"},
-        { label: "age", value: "age"},
-        { label: "min_age", value: "min_age"},
-        { label: "max_age", value: "max_age"},
-
-        { label: "N", value: "N" },
-        { label: "R", value: "R"},
-        { label: "delta_R", value: "delta_R"},
-        { label: "R_sig", value: "R_sig"},
-        { label: "L", value: "L"},
-        { label: "delta_L", value: "delta_L"},
-        { label: "L_sig", value: "L_sig"},
-        { label: "ref_plon", value: "ref_plon"},
-        { label: "ref_plat", value: "ref_plat"},
-        // { label: "ref_lon", value: "ref_lon"},
-        // { label: "ref_lat", value: "ref_lat"},
-        { label: "A95", value: "A95" },
-        { label: "B95", value: "B95"},
-        { label: "plat", value: "plat" },
-        { label: "plon", value: "plon" },
-
-        //These values are in the input data, but not in the export data.
-        //if it is possible to match the input and export data, these values can be added
-        // { label: "slat", value: "slat"},
-        // { label: "slon", value: "slon"},
-        // { label: "K", value: "K"},
-        // { label: "mdec", value: "mdec"},
-        // { label: "minc", value: "minc"},
-        // { label: "plateID", value: "plateID"},
-        // { label: "lithology", value: "lithology"},
-        // { label: "f", value: "f"},
-        // { label: "p_std", value: "p_std"},
+        { label: "name", value: ["input_pole", "name"] },
+        { label: "age", value: ["input_pole", "age"] },
+        { label: "min_age", value: ["input_pole", "min_age"] },
+        { label: "max_age", value: ["input_pole", "max_age"] },
+        { label: "N", value: ["input_pole", "N"] },
+        { label: "R", value: ["R", "R"] },
+        { label: "delta_R", value: ["R", "delta_R"] },
+        { label: "R_sig", value: ["R", "R_sig"] },
+        { label: "L", value: ["L", "L"] },
+        { label: "delta_L", value: ["L", "delta_L"] },
+        { label: "L_sig", value: ["L", "L_sig"] },
+        // { label: "ref_plon", value: ["ref", "plon"] },
+        // { label: "ref_plat", value: ["ref", "plat"] },
+        { label: "A95", value: ["input_pole", "A95"] },
+        { label: "B95", value: "B95" },
+        { label: "plat", value: ["input_pole", "plat"] },
+        { label: "plon", value: ["input_pole", "plon"] },
+        { label: "ref_dec", value: ["ref", "dec"] },
+        { label: "ref_inc", value: ["ref", "inc"] },
+        { label: "ref_mean_N", value: ["ref", "mean_N"] },
+        { label: "ref_mean_K", value: ["ref", "mean_K"] },
     ];
 
-    helpers.general.downloadXlsx(fields, vnode.attrs.rpd, title);
+    helpers.general.downloadXlsx(fields, vnode.attrs.rpd, title, filetype);
 
 }

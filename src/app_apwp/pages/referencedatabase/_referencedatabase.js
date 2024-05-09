@@ -6,6 +6,7 @@ import './_referencedatabase.less';
 
 //assets
 import GAPWP23 from '../../assets/Vaes_et_al_2023_global_APWP.zip';
+import GAPWP23_img from '../../assets/global_APWP.png';
 
 //components
 import { comp as Input_select } from '../../../shared/components/input_select.js';
@@ -34,12 +35,17 @@ export const page = {
     view: function(vnode) {
         return (
             <div class="page referencedatabase">
-                <div class='section content_width_narrow_left'>
-                    <h2>Reference Database</h2>
-                    This portal hosts the reference database that underpins the global APWP for the last 320 Ma from Vaes et al. (2023).
-                    <br/><br/>
-                    Below, the most recent version of the global APWP – in the coordinate frame of all major tectonic plates - can be accessed and downloaded, as well as the paleomagnetic database and the global plate circuit, which underlie the computation of the APWP.
-                    This portal provides a platform where future updates of the global APWP will be made available.
+                <div class='section content_width_standard flexequal'>
+                    <div>
+                        <h2>Reference Database</h2>
+                        This portal hosts the reference database that underpins the global APWP for the last 320 Ma from Vaes et al. (2023).
+                        <br/><br/>
+                        Below, the most recent version of the global APWP – in the coordinate frame of all major tectonic plates - can be accessed and downloaded, as well as the paleomagnetic database and the global plate circuit, which underlie the computation of the APWP.
+                        This portal provides a platform where future updates of the global APWP will be made available.
+                    </div>
+                    <div class="GAPWP23">
+                        <img src={GAPWP23_img} />
+                    </div>
                 </div>
 
                 <div class='section content_width_standard'>
@@ -57,7 +63,7 @@ export const page = {
                         <a href="https://doi.org/10.1016/j.earscirev.2023.104547" target="_blank">
                             <img src="https://zenodo.org/badge/DOI/10.1016/j.earscirev.2023.104547.svg" alt="DOI" />
                         </a>
-                        <div><a href={GAPWP23}>Download zip (354 kB)</a></div>
+                        <div><a href={GAPWP23}>Download zip (367 kB)</a></div>
                     </div>
                 </div>
 

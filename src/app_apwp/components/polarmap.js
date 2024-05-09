@@ -72,6 +72,9 @@ export const comp = {
                             <a onclick={() => { ExportXLSX(vnode); vnode.state.isOpen.export = false }} href='javascript:'>
                                 <i class="fa-solid fa-download fa-fw"></i> Download XLSX
                             </a>
+                            <a onclick={() => { ExportXLSX(vnode, "csv"); vnode.state.isOpen.export = false }} href='javascript:'>
+                                <i class="fa-solid fa-download fa-fw"></i> Download CSV
+                            </a>
                             <a onclick={() => { exportToPNG(vnode); vnode.state.isOpen.export = false }} href='javascript:'>
                                 <i class="fa-solid fa-download fa-fw"></i> Download PNG
                             </a>
@@ -256,6 +259,7 @@ function updateLocations(vnode) {
     if (vnode.state.map === undefined) return;
 
     clearLocations(vnode);
+
     if (vnode.attrs.path) {
         drawLocations(vnode.attrs.path, true, vnode);
     }
@@ -276,8 +280,8 @@ function drawLocations(locations, isPath, vnode) {
     let prevCoord;
 
     locations.forEach((location, i, allLocations) => {
-        const longitude = location.slon ?? location.plon;
-        const latitude = location.slat ?? location.plat;
+        const longitude = isPath ? location.plon : location.slon;
+        const latitude = isPath ? location.plat : location.slat;
         const uncertainty = location.B95 ?? (location.A95 ?? location.P95);
         const label = parseFloat(location.age.toFixed(2)).toString() + "Ma";
 
@@ -401,7 +405,9 @@ function exportToPNG(vnode) {
 }
 
 
-function ExportXLSX(vnode) {
+function ExportXLSX(vnode, filetype) {
+    filetype = filetype ?? "xlsx";
+
     if (vnode.attrs.path) {
         let title = "Path of " + vnode.attrs.exportName;
 
@@ -417,10 +423,13 @@ function ExportXLSX(vnode) {
             { label: "elong", value: "elong" },
             { label: "mean_E", value: "mean_E" },
             { label: "mean_K", value: "mean_K" },
-            { label: "mean_csd", value: "mean_csd" }
+            { label: "mean_csd", value: "mean_csd" },
+            { label: "slat", value: "slat" },
+            { label: "slon", value: "slon" },
+            { label: "name", value: "name" },
         ];
 
-        helpers.general.downloadXlsx(fields, vnode.attrs.path, title);
+        helpers.general.downloadXlsx(fields, vnode.attrs.path, title, filetype);
         return;
     }
     else if (vnode.attrs.poles) {
@@ -445,7 +454,7 @@ function ExportXLSX(vnode) {
             { label: "plateID", value: "plateID" },
         ];
 
-        helpers.general.downloadXlsx(fields, vnode.attrs.poles, title);
+        helpers.general.downloadXlsx(fields, vnode.attrs.poles, title, filetype);
         return;
     }
     else {

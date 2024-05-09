@@ -7,7 +7,9 @@ import './_apwptool.less';
 
 
 //assets
-import Demo_input from "../../assets/demo_input.xlsx";
+import Demo_input_XLSX from "../../assets/demo_input.xlsx";
+import Demo_input_CSV_NEJ from "../../assets/demo_input_NEJ.csv";
+import Demo_input_CSV_SWJ from "../../assets/demo_input_SWJ.csv";
 import MANUAL_apwp from '../../assets/APWP-online_manual.pdf';
 
 
@@ -44,6 +46,10 @@ export const page = {
     view: function(vnode) {
         let inputDisabled = vnode.state.caclbusy;
 
+        let demodataloaded = vnode.state.datasets.filter((ds) => {
+            return ds.isdemo || ds.name === "DEMO - South west Japan" || ds.name === "DEMO - North east Japan";
+        }).length > 1;
+
         return (
             <div class="page apwptool">
                 <Pyodideinfobox />
@@ -52,7 +58,9 @@ export const page = {
                     <h2>APWP Tool</h2>
                     This tool allows you to compute an APWP based on site-level paleomagnetic data using the approach of <a href='#!/referencedatabase'>Vaes et al. (2023)</a>.
                     <br/><br/>
-                    <a href={Demo_input}>Download demo input file (XLSX)</a>
+                    Download:<br />
+                    <a href={Demo_input_XLSX}>Example input file (XSLX, contains both Japan datasets)</a><br />
+                    <a href={Demo_input_CSV_NEJ}>Example input file (CSV, North East Japan)</a><br />
                     <br /><br />
                     <Showmore>
                         <h4>What</h4>
@@ -101,9 +109,18 @@ export const page = {
                     <div class='datasetgrid'>
                         <div class="flexcolumn">
                             <Loaddataset onnewfile={() => { getData(vnode); }} />
-                            <button onclick={() => { addDemoData(vnode); }}>
-                                Load in demo data
-                            </button>
+                            <Choose>
+                                <When condition={!demodataloaded}>
+                                    <button onclick={() => { addDemoData(vnode); }}>
+                                        Load in demo data
+                                    </button>
+                                </When>
+                                <Otherwise>
+                                    <center>
+                                        <span class='txt_default_lesser'>Demo data is loaded</span>
+                                    </center>
+                                </Otherwise>
+                            </Choose>
                         </div>
 
                         {vnode.state.datasets.map((dataset) => {
@@ -340,7 +357,14 @@ function calcAPWP(vnode, dataset) {
 
 function addDemoData(vnode) {
     let promises = config.demodata.map((dataset) => {
-        return helpers.docstore.set("dataset", dataset);
+        //check if the dataset is already loaded
+        let exists = vnode.state.datasets.find((ds) => { return ds.name === dataset.name });
+        if (exists) {
+            return Promise.resolve();
+        }
+        else {
+            return helpers.docstore.set("dataset", dataset);
+        }
     });
 
     Promise.all(promises).then(() => {

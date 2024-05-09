@@ -34,11 +34,12 @@ export const comp = {
                     title="Add your dataset<br/><i>.xlsx or .csv</i>"
                     accept=".csv, .xls, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.spreadsheet"
                     onblur={(files) => {
-                        console.log("INPUT ON BLUR", files)
+                        // console.log("INPUT ON BLUR", files)
                         window.setTimeout(() => {
                             readFile(files[0])
                                 .then((workbook) => {return sheetSelection(vnode, workbook)})
                                 .then(worksheetToData)
+                                .then(dataEnhancement)
                                 .then(inputValidation)
                                 .then(addMissingSampleNames)
                                 .then((data) => {
@@ -124,7 +125,7 @@ export const comp = {
 
 
 function readFile(fileHandle) {
-    console.log("READFILE", fileHandle)
+    // console.log("READFILE", fileHandle)
     return new Promise((resolve, reject) => {
         try {
             if (/^image/.test(fileHandle.type) || /^application\/pdf/.test(fileHandle.type)) {
@@ -188,6 +189,41 @@ function worksheetToData(worksheet) {
         let data = XLSX.utils.sheet_to_json(worksheet, {blankrows: false, defval: null});
         resolve(data)
     })
+}
+
+function dataEnhancement(rows) {
+    return new Promise((resolve, reject) => {
+        // check if there are any rows
+        if (Array.isArray(rows) === false || rows.length === 0) {
+            reject("No data was found in this file.");
+            return;
+        }
+
+        // rename all aliases to their original name if the original name is not present
+        config.datasetImportAliases.forEach((alias) => {
+            rows = rows.map((row) => {
+                if (row[alias.orig] === undefined && row[alias.alias] !== undefined) {
+                    row[alias.orig] = row[alias.alias];
+                    delete row[alias.alias];
+                }
+                return row;
+            })
+        });
+
+        //add a empty value if certain fields are not present
+        config.datasetImportDefaults.forEach((def) => {
+            rows = rows.map((row) => {
+                if (row[def.field] === undefined) {
+                    row[def.field] = def.value;
+                }
+                return row;
+            })
+        });
+
+        console.log(rows);
+
+        resolve(rows);
+    });
 }
 
 function inputValidation(rows) {

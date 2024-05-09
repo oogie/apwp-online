@@ -257,16 +257,12 @@ def calcAPWP(options, sendProgress):
     df_APWP = pd.DataFrame(columns=['age','run','N','A95','plon','plat','kappa','csd','mean_age'])
     EP_data=[]
 
-    # get mean sampling location to append to the output later
-    locations = ipmag.make_di_block(df_range['slon'].tolist(), df_range['slat'].to_list())
-    loc_princ = pmag.doprinc(locations)
-    slat, slon = loc_princ['inc'],loc_princ['dec']
-
 
     # ## Generate reference poles
+
     # COMPUTE REFERENCE POLES FOR EACH TIME STEP
     # Nb IS NUMBER OF ITERATIONS
-    
+
     for i in range(settings['Nb']):
         output_df = get_reference_poles(df_range, df_APWP, settings['window_length'], settings['time_step'], settings['t_min'], settings['t_max'], EP_data)
         output_df['run'] = i
@@ -274,14 +270,12 @@ def calcAPWP(options, sendProgress):
         sendProgress({"title": "Calculating Custom APWP..", "content": "On iteration %s of %s" % (i+1, settings['Nb'])})
 
 
-    sendProgress({"title": "Calculating Custom APWP..", "content": "Finalizing results"})
-
     # ## Compute custom APWP
     # define center ages of time windows
     mean_pole_ages = np.arange(settings['t_min'], settings['t_max'] + settings['time_step'], settings['time_step'])
 
-    # define output dataframe
-    APWP = pd.DataFrame(columns=['center_age','min_age','max_age','N','P95','plon','plat','mean_K','mean_csd','mean_E','elong','age','slon','slat','name'])
+    # define dataframe
+    APWP = pd.DataFrame(columns=['center_age','min_age','max_age','N','P95','plon','plat','mean_K','mean_csd','mean_E','elong','age'])
 
     # compute APWP
     for center_age in mean_pole_ages:
@@ -320,10 +314,8 @@ def calcAPWP(options, sendProgress):
                 ppars = pmag.doprinc(refpole_block)
                 E = ppars["tau2"] / ppars["tau3"]
 
-                name = 'pole at ' + str(np.round(mean_age,2)) + ' Ma'
-
                 # Add reference pole and metadata to dataframe
-                APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age,slon,slat,name]
+                APWP.loc[center_age] = [center_age, min_age, max_age, mean_N_VGPs, P95, mean['dec'], mean['inc'],mean_K_VGPs,mean_csd_VGPs,mean_E_VGPs,E,mean_age]
 
     APWP.reset_index(drop=1, inplace=True)
     return APWP.to_dict('records')
