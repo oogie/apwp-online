@@ -37,24 +37,35 @@ export const page = {
                     
                     <br/><br/>
                     For more information see our papers:<br/>
-                    <a href="https://doi.org/10.31223/X5WD44" target="_blank">
-                        <img src="https://zenodo.org/badge/DOI/10.31223/X5WD44.svg" alt="DOI" style='vertical-align: text-bottom;' />
+                    <a href="https://doi.org/10.55575/tektonika2024.2.1.44" target="_blank">
+                        <img src="https://zenodo.org/badge/DOI/10.55575/tektonika2024.2.1.44.svg" alt="DOI" style='vertical-align: text-bottom;' />                
+                        &nbsp;about apwp-online.org. (2024)<br/>
                     </a>
-                    &nbsp;about apwp-online.org.<br />
-
-                    <a href="https://doi.org/10.1029/2022JB023953" target="_blank">
-                        <img src="https://zenodo.org/badge/DOI/10.1029/2022JB023953.svg" alt="DOI" style='vertical-align: text-bottom;' />
-                    </a>
-                    &nbsp;about the statistical methods.
 
                     <a href="https://doi.org/10.1016/j.earscirev.2023.104547" target="_blank">
                         <img src="https://zenodo.org/badge/DOI/10.1016/j.earscirev.2023.104547.svg" alt="DOI" style='vertical-align: text-bottom;' />
+                        &nbsp;about the global APWP (2023)<br />
                     </a>
-                    &nbsp;about the global APWP
+
+                    <a href="https://doi.org/10.1029/2022JB023953" target="_blank">
+                        <img src="https://zenodo.org/badge/DOI/10.1029/2022JB023953.svg" alt="DOI" style='vertical-align: text-bottom;' />
+                        &nbsp;about the statistical methods. (2022)<br />
+                    </a>
                 </div>
 
                 <div class='section content_width_standard flexequal'>
                     <div>
+                        <h3>How to cite</h3>
+                        When using apwp-online.org for your research, please cite our work. The following citation is suggested:
+                        <span>
+                            <blockquote>
+                                Vaes, B., van Hinsbergen, D., & Paridaens, J. (2024). APWP-online.org: a Global Reference Database
+                                and Open-Source Tools for Calculating Apparent Polar Wander Paths and Relative Paleomagnetic
+                                Displacements. τeκτoniκa, 2(1), 173–188. https://doi.org/10.55575/tektonika2024.2.1.44
+                            </blockquote>
+                        </span>
+                        <br /><br />
+
                         <h3>Code and Data</h3>
                         <span>
                             If you use apwp-online.org and/or its source code for research purposes, we kindly
@@ -83,14 +94,7 @@ export const page = {
                                 </span>
                             </div>
                         </a>
-
-                        <div class='section'>
-                            <h3>Privacy and data security statement</h3>
-                            <span>
-                                All data uploaded to our server via the form on the Reference Database page is handled with
-                                care. It is not allowed to upload any sensitive or personal data to our servers.
-                            </span>
-                        </div>
+                        <br />
 
                         <div class='section'>
                             <h3>Locally stored data</h3>

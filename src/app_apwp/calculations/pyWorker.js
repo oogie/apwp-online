@@ -1,35 +1,41 @@
 
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js");
 
-
 //calculation code
 import PY_aux from './pySrc/auxiliary.py'
 import PY_apwp from './pySrc/APWP-online_tools.py'
 import JSON_repodata from './repodata.json' //want to create a new lockfile? Use micropip.freeze() after init, see below
 
+import UP_101 from "./pySrc/data/Euler_poles_101.csv";
+import UP_102 from "./pySrc/data/Euler_poles_102.csv";
+import UP_201 from "./pySrc/data/Euler_poles_201.csv";
+import UP_301 from "./pySrc/data/Euler_poles_301.csv";
+import UP_304 from "./pySrc/data/Euler_poles_304.csv";
+import UP_501 from "./pySrc/data/Euler_poles_501.csv";
+import UP_503 from "./pySrc/data/Euler_poles_503.csv";
+import UP_701 from "./pySrc/data/Euler_poles_701.csv";
+import UP_801 from "./pySrc/data/Euler_poles_801.csv";
+import UP_802 from "./pySrc/data/Euler_poles_802.csv";
+import UP_901 from "./pySrc/data/Euler_poles_901.csv";
+import APWP_DB_Vaes from "./pySrc/data/Global_APWP_DB_Vaes_et_al.xlsx";
+import APWP_Vaes from "./pySrc/data/Global_APWP_Vaes_et_al.xlsx";
+
 //data used in calculation
 let datamodel = [
-    {name: "Euler_poles_101.csv", url: ""},
-    {name: "Euler_poles_102.csv", url: ""},
-    {name: "Euler_poles_201.csv", url: ""},
-    {name: "Euler_poles_301.csv", url: ""},
-    {name: "Euler_poles_304.csv", url: ""},
-    {name: "Euler_poles_501.csv", url: ""},
-    {name: "Euler_poles_503.csv", url: ""},
-    {name: "Euler_poles_701.csv", url: ""},
-    {name: "Euler_poles_801.csv", url: ""},
-    {name: "Euler_poles_802.csv", url: ""},
-    {name: "Euler_poles_901.csv", url: ""},
-    {name: "Global_APWP_DB_Vaes_et_al.xlsx", url: ""},
-    {name: "Global_APWP_Vaes_et_al.xlsx", url: ""},
+    { name: "Euler_poles_101.csv", url: UP_101 },
+    { name: "Euler_poles_102.csv", url: UP_102 },
+    { name: "Euler_poles_201.csv", url: UP_201 },
+    { name: "Euler_poles_301.csv", url: UP_301 },
+    { name: "Euler_poles_304.csv", url: UP_304 },
+    { name: "Euler_poles_501.csv", url: UP_501 },
+    { name: "Euler_poles_503.csv", url: UP_503 },
+    { name: "Euler_poles_701.csv", url: UP_701 },
+    { name: "Euler_poles_801.csv", url: UP_801 },
+    { name: "Euler_poles_802.csv", url: UP_802 },
+    { name: "Euler_poles_901.csv", url: UP_901 },
+    { name: "Global_APWP_DB_Vaes_et_al.xlsx", url: APWP_DB_Vaes },
+    { name: "Global_APWP_Vaes_et_al.xlsx", url: APWP_Vaes },
 ]
-
-//add the file url to the datamodel files, use a dynamic import from webpack for this
-datamodel.forEach((file) => {
-    import(`./pySrc/data/${file.name}`).then((resp) => {
-        file.url = resp.default;
-    })
-})
 
 
 function sendProgress(msg) {

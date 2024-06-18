@@ -12,8 +12,15 @@ const callbacks = {
 };
 
 
-
-const pyodideWorker = new Worker(new URL('./pyWorker.js', import.meta.url));
+// customize the chunk name with magic comments
+// see https://webpack.js.org/api/module-methods/#magic-comments
+const pyodideWorker = new Worker(
+    new URL(
+        /* webpackChunkName: "py.worker" */
+        './pyWorker.js', 
+        import.meta.url
+    )
+);
 
 pyodideWorker.onmessage = (event) => {
     const { id, error, ...data } = event.data;

@@ -166,6 +166,7 @@ function updateSeries(vnode) {
 
     vnode.state.graph.addSeries({
         animation: false,
+        enableMouseTracking: false,
 
         id: 'dispErrorbarX',
         type: 'line',

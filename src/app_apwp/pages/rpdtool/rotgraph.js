@@ -165,6 +165,7 @@ function updateSeries(vnode) {
     // ERRORBAR DATA SERIES
     vnode.state.graph.addSeries({
         animation: false,
+        enableMouseTracking: false,
 
         id: 'RotErrorbar',
         type: 'line',

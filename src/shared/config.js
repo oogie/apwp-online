@@ -31,7 +31,7 @@ export const config = {
         // Format: defaultOpts = {
         //     field: "",
         //     type: "number",
-        //     cond: ((v, rows) => true),
+        //     cond: ((v, row) => true),
         //     condMsg: "",
         //     optional: false,
         // }

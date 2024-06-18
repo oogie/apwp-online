@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: {
       index: './src/app_apwp/index.js',
     },
@@ -28,11 +28,14 @@ module.exports = {
                 return './[name]/[name].[contenthash].js'
             }
         },
+        chunkFilename(pathData) {
+            const outDir = pathData.chunk.name === 'py.worker' ? 'pyworker/' : '';
+            return outDir + '[name].[contenthash].js';
+        },
         publicPath: "",
         path: path.join(__dirname, "dist"),
         clean: true,
     },
-
 
     optimization: {
         moduleIds: 'deterministic',
